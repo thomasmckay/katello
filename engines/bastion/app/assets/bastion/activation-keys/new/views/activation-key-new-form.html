@@ -1,0 +1,67 @@
+<form name="activationKeyForm" class="form-horizontal" novalidate role="form">
+
+  <div alch-form-group label="{{ 'Name' | translate }}">
+    <input id="name"
+           name="name"
+           ng-model="activationKey.name"
+           type="text"
+           tabindex="1"
+           autofocus
+           required/>
+  </div>
+
+  <div alch-form-group label="{{ 'System Limit' | translate }}" field="max_systems">
+    <span translate>Unlimited Systems:</span>
+    <input type="checkbox"
+           name="limit"
+           ng-model="unlimited"
+           ng-checked="isUnlimited(activationKey)"
+           ng-change="unlimitedChanged(activationKey)"/>
+
+    <div alch-form-group label="{{ 'Limit' | translate }}" ng-hide="isUnlimited(activationKey)">
+      <input id="max_systems"
+             name="max_systems"
+             class="form-control"
+             ng-model="activationKey.max_systems"
+             type="number"
+             ng-change="inputChanged(activationKey)"
+             tabindex="2"/>
+    </div>
+  </div>
+
+  <div alch-form-group label="{{ 'Description' | translate }}">
+    <textarea id="description"
+              name="description"
+              ng-model="activationKey.description"
+              tabindex="3">
+    </textarea>
+  </div>
+
+  <!-- TODO: replace w/ widget -->
+  <div alch-form-group label="{{ 'Environment' | translate }}">
+    <input id="environment"
+           name="environment"
+           ng-model="activationKey.environment_id"
+           type="text"
+           tabindex="4"
+           autofocus
+           required/>
+  </div>
+  <div alch-form-group label="{{ 'Content View' | translate }}">
+    <input id="contentview"
+           name="contentview"
+           ng-model="activationKey.content_view_id"
+           type="text"
+           tabindex="4"
+           autofocus
+           required/>
+  </div>
+
+
+  <div alch-form-buttons
+       on-cancel="transitionTo('activation-keys.index')"
+       on-save="save(activationKey)"
+       working="working">
+  </div>
+
+</form>

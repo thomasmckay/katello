@@ -14,21 +14,28 @@ module Katello
 class Api::V2::SubscriptionsController < Api::V2::ApiController
   include ConsumersControllerLogic
 
+  before_filter :find_activation_key
   before_filter :find_system
   before_filter :find_organization, :only => [:index, :show, :upload]
   before_filter :find_subscription, :only => [:show]
   before_filter :find_provider
   before_filter :authorize
 
+  before_filter :load_search_service, :only => [:index, :available]
+
   resource_description do
-    description "Systems subscriptions management."
+    description "Subscriptions management."
     param :system_id, :identifier, :desc => "System uuid", :required => true
 
     api_version 'v2'
   end
 
   def rules
-    read_test = lambda { @system ? @system.readable? : @provider.readable? }
+    read_test = lambda do
+      return @system.readable? if @system
+      return ActivationKey.readable?(@activation_key.organization) if @activation_key
+      @provider.readable?
+    end
     available_test = lambda { Organization.any_readable? }
     system_modification_test = lambda { @system.editable? }
     edit_test = lambda { @provider.editable? }
@@ -44,12 +51,16 @@ class Api::V2::SubscriptionsController < Api::V2::ApiController
     }
   end
 
-  api :GET, "/systems/:system_id/subscriptions", "List system subscriptions"
+  api :GET, "/systems/:system_id/subscriptions", "List a system's subscriptions"
   api :GET, "/organization/:organization_id/subscriptions", "List organization subscriptions"
+  api :GET, "/activation_keys/:activation_key_id/subscriptions", "List an activation key's subscriptions"
   param :system_id, String, :desc => "UUID of the system", :required => false
-  param :organization_id, :identifier, :desc => "Organization id", :required => false
+  param :activation_key_id, String, :desc => "Activation key ID", :required => false
+  param :organization_id, :identifier, :desc => "Organization ID", :required => false
   # rubocop:disable SymbolName
   def index
+    filters = []
+
     if @system
       subs = @system.consumed_entitlements
       subscriptions = {
@@ -57,27 +68,32 @@ class Api::V2::SubscriptionsController < Api::V2::ApiController
           :subtotal => subs.count,
           :total => subs.count
       }
-    else
-      filters = []
-
-      # Limit subscriptions to current org and Red Hat provider
-      filters << {:term => {:org => [@organization.label]}}
-      filters << {:term => {:provider_id => [@organization.redhat_provider.id]}}
-
-      options = {
-          :filters => filters,
-          :load_records? => false,
-          :default_field => :productName
-      }
-
-      # Without any search terms, reindex all subscriptions in elasticsearch. This is to ensure
-      # that the latest information is searchable.
-      if params[:offset].to_i == 0 && params[:search].blank?
-        @organization.redhat_provider.index_subscriptions
-      end
-
-      subscriptions = item_search(Pool, params, options)
+      # TODO: just get subs like act key does below
+      respond(:collection => subscriptions) and return
+    elsif @activation_key
+      @organization = @activation_key.organization
+      subscriptions = activation_key_subscriptions(@activation_key.get_key_pools)
+      filters << {:terms => {:cp_id => subscriptions.collect(&:cp_id)}}
     end
+
+    # Limit subscriptions to current org and Red Hat provider
+    filters << {:term => {:org => [@organization.label]}}
+    filters << {:term => {:provider_id => [@organization.redhat_provider.id]}}
+
+    options = {
+        :filters => filters,
+        :load_records? => false,
+        :default_field => :productName
+    }
+
+    # TODO: remove this fragile logic
+    # Without any search terms, reindex all subscriptions in elasticsearch. This is to ensure
+    # that the latest information is searchable.
+    if params[:offset].to_i == 0 && params[:search].blank?
+      @organization.redhat_provider.index_subscriptions
+    end
+
+    subscriptions = item_search(Pool, params, options)
 
     respond(:collection => subscriptions)
   end
@@ -95,21 +111,53 @@ class Api::V2::SubscriptionsController < Api::V2::ApiController
   param :match_installed, :bool, :desc => "Return subscriptions that match installed"
   param :no_overlap, :bool, :desc => "Return subscriptions that don't overlap"
   def available
-    params[:match_system] = params[:match_system].to_bool if params[:match_system]
-    params[:match_installed] = params[:match_installed].to_bool if params[:match_installed]
-    params[:no_overlap] = params[:no_overlap].to_bool if params[:no_overlap]
+    filters = []
 
-    pools = @system.filtered_pools(params[:match_system], params[:match_installed],
-      params[:no_overlap])
-    available = available_subscriptions(pools, @system.organization)
+    if @system
+      params[:match_system] = params[:match_system].to_bool if params[:match_system]
+      params[:match_installed] = params[:match_installed].to_bool if params[:match_installed]
+      params[:no_overlap] = params[:no_overlap].to_bool if params[:no_overlap]
+      pools = @system.filtered_pools(params[:match_system], params[:match_installed],
+                                     params[:no_overlap])
+      available = available_subscriptions(pools, @system.organization)
 
-    collection = {
-        :results => available,
-        :subtotal => available.count,
-        :total => available.count
+      collection = {
+          :results => available,
+          :subtotal => available.count,
+          :total => available.count
+      }
+
+      # TODO: fall through to below instead
+      respond_for_index(:collection => collection, :template => :index) and return
+    elsif @activation_key
+      @organization = @activation_key.organization
+      subscriptions = activation_key_subscriptions(@activation_key.get_pools)
+      filters << {:terms => {:cp_id => subscriptions.collect(&:cp_id)}}
+    else
+      # TODO: perhaps /organizations/:organization_id/available to return just subs w/ unused quantity?
+      # TODO: or just those w/ repos enabled?  (eg. sub-mgr list --available)
+    end
+
+    # Limit subscriptions to current org and Red Hat provider
+    filters << {:term => {:org => [@organization.label]}}
+    filters << {:term => {:provider_id => [@organization.redhat_provider.id]}}
+
+    options = {
+        :filters => filters,
+        :load_records? => false,
+        :default_field => :productName
     }
 
-    respond_for_index(:collection => collection, :template => :index)
+    # TODO: remove this fragile logic
+    # Without any search terms, reindex all subscriptions in elasticsearch. This is to ensure
+    # that the latest information is searchable.
+    if params[:offset].to_i == 0 && params[:search].blank?
+      @organization.redhat_provider.index_subscriptions
+    end
+
+    subscriptions = item_search(Pool, params, options)
+
+    respond_for_index(:collection => subscriptions, :template => 'index')
   end
 
   api :POST, "/systems/:system_id/subscriptions", "Create a subscription"
@@ -170,6 +218,10 @@ class Api::V2::SubscriptionsController < Api::V2::ApiController
     @system = System.find_by_uuid!(params[:system_id]) if params[:system_id]
   end
 
+  def find_activation_key
+    @activation_key = ActivationKey.find_by_id!(params[:activation_key_id]) if params[:activation_key_id]
+  end
+
   def find_provider
     @provider = @organization.redhat_provider if @organization
   end
@@ -177,5 +229,34 @@ class Api::V2::SubscriptionsController < Api::V2::ApiController
   def find_subscription
     @subscription = Pool.find_by_organization_and_id!(@organization, params[:id])
   end
+
+  def activation_key_subscriptions(cp_pools)
+
+    all_subscriptions = {}
+
+    if cp_pools
+      pools = cp_pools.collect{|cp_pool| Pool.find_pool(cp_pool['id'], cp_pool)}
+
+      subscriptions = pools.collect do |pool|
+        product = Product.where(:cp_id => pool.product_id).first
+        next if product.nil?
+        pool.provider_id = product.provider_id
+        pool
+      end
+      subscriptions.compact!
+    else
+      subscriptions = []
+    end
+
+    return subscriptions
+
+    # TODO
+    subscriptions.each do |subscription|
+      all_subscriptions[subscription.cp_id] = subscription if !all_subscriptions.include? subscription
+    end
+
+    all_subscriptions
+  end
+
 end
 end

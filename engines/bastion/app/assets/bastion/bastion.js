@@ -93,3 +93,6 @@
 
 //= require "bastion/users/users.module.js"
 //= require_tree "./users"
+
+//= require "bastion/activation-keys/activation-keys.module.js"
+//= require_tree "./activation-keys"

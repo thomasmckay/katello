@@ -44,7 +44,8 @@ angular.module('Bastion', [
     'Bastion.repositories',
     'Bastion.system-groups',
     'Bastion.gpg-keys',
-    'Bastion.tasks'
+    'Bastion.tasks',
+    'Bastion.activation-keys'
 ]);
 
 /**

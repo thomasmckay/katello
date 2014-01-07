@@ -72,6 +72,14 @@ class ActivationKeysController < Katello::ApplicationController
     }
   end
 
+  def index
+    if current_user.legacy_mode
+      render :index
+    else
+      render 'bastion/layouts/application', :layout => false
+    end
+  end
+
   def items
     render_panel_direct(ActivationKey, @panel_options, params[:search], params[:offset] || 0, [:name_sort, 'asc'],
         {:default_field => :name, :filter => {:organization_id => [current_organization.id]}})
