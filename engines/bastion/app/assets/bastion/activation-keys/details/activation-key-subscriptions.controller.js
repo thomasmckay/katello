@@ -57,16 +57,17 @@ angular.module('Bastion.activation-keys').controller('ActivationKeySubscriptions
             });
         };
 
-        $scope.quantityTranslations = {"0": "Automatic"};
-        $scope.isAutomaticQuantity = function (subscription) {
-            return subscription['quantity'] === 0;
+        // TODO: move to a directive? talk to @walden
+        $scope.formatAmountDisplay = function (subscription) {
+            var amount = subscription.amount;
+            subscription.amountDisplay = (amount === undefined || amount < 1) ? gettext("Automatic") : amount;
+            return subscription;
         }
-        $scope.automaticQuantityChanged = function (subscription) {
-            if ($scope.isAutomaticQuantity(subscription)) {
-                subscription['quantity'] = 1;
-            } else {
-                subscription['quantity'] = 0;
-            }
-        };
+        $scope.showAmountSelector = function (subscription) {
+            return true; //subscription['multi_entitlement'];
+        }
+        $scope.amountSelectorValues = function (subscription) {
+            return [gettext("Automatic"), 1, 2, 3];  //subscription['instance_multiplier']
+        }
     }]
 );

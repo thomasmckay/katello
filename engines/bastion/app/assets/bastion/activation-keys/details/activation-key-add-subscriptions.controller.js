@@ -24,7 +24,7 @@
  * @requires ActivationKey
  *
  * @description
- *   Provides the functionality for the system  group add subscriptions pane.
+ *   Provides the functionality for the activation key add subscriptions pane.
  */
 angular.module('Bastion.activation-keys').controller('ActivationKeyAddSubscriptionsController',
     ['$scope', '$state', '$location', 'gettext', 'Nutupane', 'CurrentOrganization', 'Subscription', 'ActivationKey',
@@ -33,36 +33,27 @@ angular.module('Bastion.activation-keys').controller('ActivationKeyAddSubscripti
         var addSubscriptionsPane, params;
 
         params = {
-            'id':          $scope.$stateParams.activationKeyId,
+            'organization_id':          CurrentOrganization,
             'search':                   $location.search().search || "",
             'sort_by':                  'name',
             'sort_order':               'ASC'
         };
 
-        addSubscriptionsPane = new Nutupane(ActivationKey, params, 'available');
-        // addSubscriptionsPane.searchTransform = function (term) {
-        //     var addition = "NOT ( activation_key_ids:" + $scope.$stateParams.activationKeyId + " )";
-        //     if (term === "" || term === undefined) {
-        //         return addition;
-        //     } else {
-        //         return term +  " " + addition;
-        //     }
-        // };
-
+        addSubscriptionsPane = new Nutupane(Subscription, params);
         $scope.addSubscriptionsTable = addSubscriptionsPane.table;
         $scope.isAdding  = false;
         $scope.addSubscriptionsTable.closeItem = function () {};
 
         $scope.showAddButton = function () {
-            return $scope.addSubscriptionsTable.numSelected === 0 || $scope.isAdding || !$scope.group.permissions.editable;
+            return $scope.addSubscriptionsTable.numSelected === 0 || $scope.isAdding || !$scope.activationKey.permissions.editable;
         };
 
         $scope.addSelected = function () {
             var selected;
-            selected = _.pluck($scope.addSubscriptionsTable.getSelected(), 'uuid');
+            selected = _.pluck($scope.addSubscriptionsTable.getSelected(), 'cp_id');
 
             $scope.isAdding = true;
-            ActivationKey.addSubscriptions({id: $scope.group.id, 'subscription_ids': selected}, function () {
+            ActivationKey.addSubscriptions({id: $scope.activationKey.id, 'subscription_ids': selected}, function () {
                 $scope.successMessages.push(gettext("Successfully added %s subscriptions.").replace('%s', selected.length));
                 $scope.isAdding = false;
                 addSubscriptionsPane.refresh();
@@ -72,5 +63,17 @@ angular.module('Bastion.activation-keys').controller('ActivationKeyAddSubscripti
             });
         };
 
+        // TODO: move to a directive? talk to @walden
+        $scope.formatAmountDisplay = function (subscription) {
+            var amount = subscription.amount;
+            subscription.amountDisplay = (amount === undefined || amount < 1) ? gettext("Automatic") : amount;
+            return subscription;
+        }
+        $scope.showAmountSelector = function (subscription) {
+            return subscription.selected && subscription['multi_entitlement'] === true;
+        }
+        $scope.amountSelectorValues = function (subscription) {
+            return [gettext("Automatic"), 1, 2, 3];  //subscription['instance_multiplier']
+        }
     }]
 );
