@@ -54,29 +54,34 @@
       <table ng-class="{'table-mask': addSubscriptionsTable.working}" class="table table-full table-striped">
         <thead>
           <tr alch-table-head row-select>
-            <th alch-table-column="name" translate>Name</th>
-            <th alch-table-column="name" translate>Environment</th>
-            <th alch-table-column="name" translate>Content View</th>
+            <th alch-table-column="name" sortable>{{ "Name" | translate }}</th>
+            <th alch-table-column="consumed" sortable class="align-center">{{ "Consumed" | translate }}</th>
+            <th alch-table-column="type" sortable>{{ "Type" | translate }}</th>
+            <th alch-table-column="startDate" sortable>{{ "Starts" | translate }}</th>
+            <th alch-table-column="endDate" sortable>{{ "Expires" | translate }}</th>
+            <th alch-table-column="supportLevel">{{ "SLA" | translate }}</th>
+            <th alch-table-column="contractNumber" sortable>{{ "Contract #" | translate }}</th>
+            <th alch-table-column="accountNumber" sortable>{{ "Account #" | translate }}</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr alch-table-row ng-repeat="subscription in addSubscriptionsTable.rows">
-            <td class="row-select">
-              <input type="checkbox"
-                     ng-model="subscription.selected"
-                     ng-change="itemSelected(subscription)"/>
-            </td>
+          <tr alch-table-row ng-repeat="subscription in addSubscriptionsTable.rows" row-select="subscription">
             <td alch-table-cell>
-              <a ui-sref="subscriptions.details.info({subscriptionId: subscription.id})">
-                {{ subscription.name }}
+              <a ui-sref="subscriptions.details.info({subscriptionId: subscription.cp_id})">
+                {{ subscription.product_name }}
               </a>
             </td>
-            <td alch-table-cell>{{ subscription.environment.name }}</td>
-            <td alch-table-cell>{{ subscription.content_view.name }}</td>
+            <td alch-table-cell>{{ formatConsumed(subscription) }}</td>
+            <td alch-table-cell>{{ subscriptionType(subscription) }}</td>
+            <td alch-table-cell>{{ subscription.startDate | date:"short" }}</td>
+            <td alch-table-cell>{{ subscription.endDate | date:"short" }}</td>
+            <td alch-table-cell>{{ subscription.sla }}</td>
+            <td alch-table-cell>{{ subscription.contractNumber }}</td>
+            <td alch-table-cell>{{ subscription.accountNumber }}</td>
           </tr>
-
         </tbody>
+
       </table>
     </div>
   </div>
