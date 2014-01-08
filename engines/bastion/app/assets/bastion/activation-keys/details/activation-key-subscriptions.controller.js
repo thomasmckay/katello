@@ -33,7 +33,8 @@ angular.module('Bastion.activation-keys').controller('ActivationKeySubscriptions
             'id':          $scope.$stateParams.activationKeyId,
             'search':      $location.search().search || "",
             'sort_by':     'name',
-            'sort_order':  'ASC'
+            'sort_order':  'ASC',
+            'paged':       true
         };
 
         subscriptionsPane = new Nutupane(ActivationKey, params, 'subscriptions');
@@ -56,5 +57,16 @@ angular.module('Bastion.activation-keys').controller('ActivationKeySubscriptions
             });
         };
 
+        $scope.quantityTranslations = {"0": "Automatic"};
+        $scope.isAutomaticQuantity = function (subscription) {
+            return subscription['quantity'] === 0;
+        }
+        $scope.automaticQuantityChanged = function (subscription) {
+            if ($scope.isAutomaticQuantity(subscription)) {
+                subscription['quantity'] = 1;
+            } else {
+                subscription['quantity'] = 0;
+            }
+        };
     }]
 );

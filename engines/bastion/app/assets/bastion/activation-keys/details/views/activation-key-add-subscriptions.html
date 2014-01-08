@@ -55,6 +55,7 @@
         <thead>
           <tr alch-table-head row-select>
             <th alch-table-column="name" sortable>{{ "Name" | translate }}</th>
+            <th alch-table-column="quantity" sortable>{{ "Quantity" | translate }}</th>
             <th alch-table-column="consumed" sortable class="align-center">{{ "Consumed" | translate }}</th>
             <th alch-table-column="type" sortable>{{ "Type" | translate }}</th>
             <th alch-table-column="startDate" sortable>{{ "Starts" | translate }}</th>
@@ -71,6 +72,21 @@
               <a ui-sref="subscriptions.details.info({subscriptionId: subscription.cp_id})">
                 {{ subscription.product_name }}
               </a>
+            </td>
+            <td alch-table-cell>
+              <span translate>Automatic</span>
+              <input type="checkbox"
+                     name="limit"
+                     ng-model="subscription.automatic"
+                     ng-checked="isAutomaticQuantity(subscription)"
+                     ng-change="automaticQuantityChanged(subscription)"/>
+              <input id="quantity"
+                     name="quantity"
+                     class="form-control"
+                     ng-model="subscription.quantity"
+                     type="number"
+                     ng-change="inputChanged(subscription)"
+                     ng-hide="isAutomaticQuantity(subscription)"/>
             </td>
             <td alch-table-cell>{{ formatConsumed(subscription) }}</td>
             <td alch-table-cell>{{ subscriptionType(subscription) }}</td>
