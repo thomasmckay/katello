@@ -11,75 +11,28 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Katello
-class ActivationKeysController < Katello::ApplicationController
-  include ActivationKeysHelper
+  class ActivationKeysController < Katello::ApplicationController
+    respond_to :html, :js
 
-  before_filter :require_user
-  before_filter :find_activation_key, :only => [:show, :edit, :update, :destroy,
-                                                :available_subscriptions, :applied_subscriptions,
-                                                :add_subscriptions, :remove_subscriptions,
-                                                :system_groups, :systems, :add_system_groups, :remove_system_groups]
-  before_filter :find_environment, :only => [:edit]
-  before_filter :authorize #after find_activation_key, since the key is required for authorization
-  before_filter :panel_options, :only => [:index, :items, :show, :create]
-  before_filter :search_filter, :only => [:auto_complete_search]
+    before_filter :authorize
 
-  respond_to :html, :js
+    def rules
+      read_test = lambda {ActivationKey.readable?(current_organization)}
+      {
+        :index => read_test,
+        :all => read_test
+      }
+    end
 
-  def section_id
-    'activation_keys'
-  end
-
-  def rules
-    read_test = lambda{ActivationKey.readable?(current_organization)}
-    manage_test = lambda{ActivationKey.manageable?(current_organization)}
-    {
-      :index => read_test,
-      :items => read_test,
-      :show => read_test,
-      :auto_complete_search => read_test,
-
-      :new => manage_test,
-      :create => manage_test,
-
-      :edit => read_test,
-      :update => manage_test,
-
-      :available_subscriptions => read_test,
-      :applied_subscriptions => read_test,
-
-      :add_subscriptions => manage_test,
-      :remove_subscriptions => manage_test,
-
-      :system_groups => read_test,
-      :systems => read_test,
-      :add_system_groups => manage_test,
-      :remove_system_groups => manage_test,
-
-      :destroy => manage_test
-    }
-  end
-
-  def param_rules
-    {
-      :create => {:activation_key => [:name, :description, :environment_id,
-                                      :usage_limit, :content_view_id]
-        },
-      :update => {:activation_key  => [:name, :description, :environment_id,
-                                       :usage_limit, :content_view_id]
-        },
-      :update_system_groups => {:activation_key => [:system_group_ids]}
-    }
-  end
-
-  def index
-    if current_user.legacy_mode
-      render :index
-    else
+    def index
       render 'bastion/layouts/application', :layout => false
     end
-  end
 
+    def all
+      redirect_to action: 'index', :anchor => '/activation-keys'
+    end
+
+=begin
   def items
     render_panel_direct(ActivationKey, @panel_options, params[:search], params[:offset] || 0, [:name_sort, 'asc'],
         {:default_field => :name, :filter => {:organization_id => [current_organization.id]}})
@@ -360,6 +313,7 @@ class ActivationKeysController < Katello::ApplicationController
   def search_filter
     @filter = {:organization_id => current_organization}
   end
+=end
 
-end
+  end
 end

@@ -116,7 +116,11 @@ Katello::Engine.routes.draw do
     end
   end
 
-  resources :activation_keys do
+  resources :activation_keys, :only => [:index] do
+    collection do
+      get :all
+    end
+=begin TODO: remove
     collection do
       get :auto_complete_search
       get :items
@@ -135,6 +139,7 @@ Katello::Engine.routes.draw do
       put :add_system_groups
       put :remove_system_groups
     end
+=end
   end
 
   resources :gpg_keys do

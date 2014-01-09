@@ -66,7 +66,7 @@ angular.module('Bastion.activation-keys').controller('ActivationKeyAddSubscripti
         // TODO: move to a directive? talk to @walden
         $scope.formatAmountDisplay = function (subscription) {
             var amount = subscription.amount;
-            subscription.amountDisplay = (amount === undefined || amount < 1) ? gettext("Automatic") : amount;
+            subscription.amountDisplay = (_.isEmpty(amount) || amount < 1) ? gettext("Automatic") : amount;
             return subscription;
         }
         $scope.showAmountSelector = function (subscription) {
