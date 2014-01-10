@@ -24,10 +24,22 @@
  *   Provides the functionality specific to ActivationKeys for creating a new activation key
  */
 angular.module('Bastion.activation-keys').controller('ActivationKeyFormController',
-    ['$scope', '$q', 'ActivationKey', 'CurrentOrganization',
-    function ($scope, $q, ActivationKey, CurrentOrganization) {
+    ['$scope', '$q', 'ActivationKey', 'CurrentOrganization', 'ContentView',
+    function ($scope, $q, ActivationKey, CurrentOrganization, ContentView) {
 
         $scope.activationKey = $scope.activationKey || new ActivationKey();
+        $scope.organization = CurrentOrganization;
+        $scope.contentViews = [];
+
+        $scope.$on('$viewContentLoaded', function () {
+            $scope.setupSelector();
+        });
+
+        $scope.setEnvironment = function (environmentId) {
+            ContentView.query({ 'environment_id': environmentId }, function (response) {
+                $scope.contentViews = response.results;
+            });
+        };
 
         $scope.save = function (activationKey) {
             activationKey['organization_id'] = CurrentOrganization;
@@ -66,7 +78,7 @@ angular.module('Bastion.activation-keys').controller('ActivationKeyFormControlle
         function error(response) {
             $scope.working = false;
             angular.forEach(response.data.errors, function (errors, field) {
-                $scope.activationKeyForm[field].$setValidity('', false);
+                $scope.activationKeyForm[field].$setValidity('server', false);
                 $scope.activationKeyForm[field].$error.messages = errors;
             });
         }
