@@ -18,7 +18,12 @@
  * @description
  *   Module for activation keys related functionality.
  */
-angular.module('Bastion.activation-keys', ['ngResource', 'Bastion.utils', 'ui.router']);
+angular.module('Bastion.activation-keys', [
+    'ngResource',
+    'ui.router',
+    'Bastion.utils',
+    'Bastion.widgets'
+]);
 
 angular.module('Bastion.activation-keys').config(['$stateProvider', function ($stateProvider) {
     $stateProvider.state('activation-keys', {

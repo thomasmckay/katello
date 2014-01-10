@@ -38,23 +38,29 @@
   </div>
 
   <!-- TODO: replace w/ widget -->
-  <div alch-form-group label="{{ 'Environment' | translate }}">
-    <input id="environment"
-           name="environment"
-           ng-model="activationKey.environment_id"
-           type="text"
-           tabindex="4"
-           autofocus
-           required/>
+  <div class="form-group required">
+    <label class="control-label col-sm-2" translate>Environment</label>
+    <div class="col-sm-5 input">
+      <span id="environment_path_selector"
+            path-selector="activationKey.environment_id"
+            organization="organization"
+            on-change="setEnvironment(environmentId)">
+      </span>
+    </div>
   </div>
+
   <div alch-form-group label="{{ 'Content View' | translate }}">
-    <input id="contentview"
-           name="contentview"
-           ng-model="activationKey.content_view_id"
-           type="text"
-           tabindex="4"
-           autofocus
-           required/>
+    <select id="content_view"
+            name="content_view"
+            ng-model="activationKey.content_view_id"
+            ng-options="contentView.name for contentView in contentViews"
+            tabindex="4"
+            autofocus
+            required/>
+    </select>
+    <span class="help-block" translate>
+      If the content view selector list is blank you will need to choose a different environment that contains atleast 1 content view.
+    </span>
   </div>
 
 
