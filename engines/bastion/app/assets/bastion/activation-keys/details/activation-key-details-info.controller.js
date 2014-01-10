@@ -16,14 +16,66 @@
  * @name  Bastion.systems.controller:ActivationKeyDetailsInfoController
  *
  * @requires $scope
+ * @requires ContentView
  *
  * @description
  *   Provides the functionality for the system group details action pane.
  */
 angular.module('Bastion.activation-keys').controller('ActivationKeyDetailsInfoController',
-    ['$scope', function ($scope) {
+    ['$scope', '$q', 'ContentView',
+        function ($scope, $q, ContentView) {
+
+        $scope.editContentView = false;
+
+        $scope.$on('activationKey.loaded', function () {
+            $scope.setupSelector();
+        });
+
+        $scope.setEnvironment = function (environmentId) {
+            environmentId = parseInt(environmentId, 10);
+
+            if ($scope.previousEnvironment !== environmentId) {
+                $scope.previousEnvironment = $scope.activationKey.environment.id;
+                $scope.activationKey.environment.id = environmentId;
+                $scope.editContentView = true;
+
+                /*jshint camelcase:false*/
+                $scope.pathSelector.disable_all();
+            }
+        };
+
+        $scope.cancelContentViewUpdate = function () {
+            if ($scope.editContentView) {
+                $scope.editContentView = false;
+                $scope.activationKey.environment.id = $scope.previousEnvironment;
+
+                /*jshint camelcase:false*/
+                $scope.pathSelector.enable_all();
+                $scope.pathSelector.select($scope.previousEnvironment);
+            }
+        };
+
+        $scope.saveContentView = function (activationKey) {
+            $scope.previousEnvironment = undefined;
+            $scope.save(activationKey);
+
+            /*jshint camelcase:false*/
+            $scope.pathSelector.enable_all();
+        };
+
+        $scope.contentViews = function () {
+            var deferred = $q.defer();
+
+            ContentView.query({ 'environment_id': $scope.activationKey.environment.id }, function (response) {
+                deferred.resolve(response.results);
+            });
+
+            return deferred.promise;
+        };
+
 
         $scope.limitTranslations = {"-1": "Unlimited"};
+
         $scope.isUnlimited = function (group) {
             return group['max_systems'] === -1;
         };
