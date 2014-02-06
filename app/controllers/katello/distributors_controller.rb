@@ -12,7 +12,30 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Katello
-class DistributorsController < Katello::ApplicationController
+  class DistributorsController < Katello::ApplicationController
+    respond_to :html, :js
+
+    before_filter :authorize
+
+    def rules
+      read_test = lambda {Distributor.readable?}
+      {
+        :index => read_test,
+        :all => read_test
+      }
+    end
+
+    def index
+      render 'bastion/layouts/application', :layout => false
+    end
+
+    def all
+      redirect_to action: 'index', :anchor => '/distributors'
+    end
+  end
+end
+
+=begin
   include DistributorsHelper
   include ConsumersControllerLogic
 
@@ -501,3 +524,4 @@ class DistributorsController < Katello::ApplicationController
 
 end
 end
+=end

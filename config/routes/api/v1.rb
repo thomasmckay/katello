@@ -145,20 +145,6 @@ Katello::Engine.routes.draw do
         end
       end
 
-      resources :distributors, :only => [:show, :destroy, :create, :index, :update] do
-        member do
-          get :pools
-          get :export
-        end
-        resources :subscriptions, :only => [:create, :index, :destroy] do
-          collection do
-            match '/' => 'subscriptions#destroy_all', :via => :delete
-            match '/serials/:serial_id' => 'subscriptions#destroy_by_serial', :via => :delete
-          end
-        end
-      end
-      match "/distributor_versions" => "distributors#versions", :via => :get, :as => :distributors_versions
-
       resources :providers, :except => [:index] do
         resources :sync, :only => [:index, :create] do
           delete :index, :on => :collection, :action => :cancel

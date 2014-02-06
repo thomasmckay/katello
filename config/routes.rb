@@ -273,30 +273,9 @@ Katello::Engine.routes.draw do
     end
   end
 
-  resources :distributors do
-    resources :events, :only => [:index, :show], :controller => "distributor_events" do
-      collection do
-        get :status, action: :distributor_status
-        get :more_events
-        get :items
-      end
-    end
-
-    member do
-      get :edit
-      get :subscriptions
-      post :update_subscriptions
-      get :products
-      get :more_products
-      get :download
-      get :custom_info
-    end
+  resources :distributors, :only => [:index] do
     collection do
-      get :auto_complete
-      get :items
-      get :env_items
-      get :environments
-      delete :bulk_destroy
+      get :all
     end
   end
 

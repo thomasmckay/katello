@@ -31,6 +31,19 @@ Katello::Engine.routes.draw do
 
       api_resources :content_views, :only => [:index]
 
+      api_resources :distributors, :only => [:index, :create, :show, :update] do
+        member do
+          get :export
+        end
+        api_resources :subscriptions, :only => [:create, :index, :destroy] do
+          collection do
+            match '/' => 'subscriptions#destroy', :via => :put
+            match '/available' => 'subscriptions#available', :via => :get
+          end
+        end
+      end
+      # TODO: ???? match "/distributor_versions" => "distributors#versions", :via => :get, :as => :distributors_versions
+
       api_resources :environments, :only => [:index, :show, :create, :update, :destroy] do
         api_resources :systems, :only => system_onlies do
           get :report, :on => :collection
