@@ -34,7 +34,7 @@
       <div ng-hide="activationKey.readonly" class="nutupane-actions pull-right">
          <button class="btn btn-primary"
                  translate
-                 ng-disabled="disableRemoveButton()"
+                 ng-disabled="disableRemoveButton() || !activationKey.permissions.edit"
                  ng-click="removeSelected()">
            Remove Selected
          </button>

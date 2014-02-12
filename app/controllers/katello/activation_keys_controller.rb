@@ -12,6 +12,9 @@
 
 module Katello
   class ActivationKeysController < Katello::ApplicationController
+
+    include Foreman::Controller::AutoCompleteSearch
+
     respond_to :html, :js
 
     before_filter :authorize

@@ -17,8 +17,12 @@ module Katello
     before_filter :find_environment, :only => [:index, :create, :update]
     before_filter :find_optional_organization, :only => [:index]
     before_filter :find_activation_key, :only => [:show, :update]
-    before_filter :authorize
+    #before_filter :authorize
 
+    def rules
+      {}
+    end
+=begin
     def rules
       read_test   = lambda do
         ActivationKey.readable?(@organization) ||
@@ -29,12 +33,13 @@ module Katello
           (ActivationKey.manageable?(@environment.organization) unless @environment.nil?)
       end
       {
-        :index                => read_test,
-        :show                 => read_test,
+        :index                => lambda {true}, #read_test,
+        :show                 => lambda {true}, #read_test,
         :create               => manage_test,
         :update               => manage_test
       }
     end
+=end
 
     api :GET, "/activation_keys", "List activation keys"
     api :GET, "/organizations/:organization_id/activation_keys"
@@ -42,7 +47,10 @@ module Katello
     param :name, String, :desc => "activation key name to filter by"
     param_group :search, Api::V2::ApiController
     def index
-      filters = [:terms => {:id => ActivationKey.readable(@organization).pluck(:id)}]
+      #filters = [:terms => {:id => ActivationKey.readable(@organization).pluck(:id)}]
+      ids = resource_base.find_all.collect {|obj| obj.id}
+      filters = [:terms => {:id => ids}]
+      filters << {:term => {:organization_id => @organization.id}} if @organization
       filters << {:term => {:name => params[:name].downcase}} if params[:name]
 
       options = {
@@ -84,7 +92,7 @@ module Katello
     end
 
     api :GET, "/activation_keys/:id", "Show an activation key"
-    param :id, :identifier, :desc => "ID of the activation key", :required => true
+    param :id, String, :desc => "ID of the activation key", :required => true
     def show
       respond
     end
@@ -119,7 +127,7 @@ module Katello
     end
 
     def find_activation_key
-      @activation_key = ActivationKey.find(params[:id])
+      @activation_key = resource_base.find(params[:id])
       fail HttpErrors::NotFound, _("Couldn't find activation key '%s'") % params[:id] if @activation_key.nil?
       @activation_key
     end
@@ -156,6 +164,22 @@ module Katello
       end
       attrs = [:name, :description, :environment_id, :usage_limit, :organization_id, :content_view_id]
       params.require(:activation_key).permit(*attrs)
+    end
+
+    def resource_base
+      @resource_base ||= ActivationKey.authorized(current_permission, ActivationKey)
+    end
+
+    def current_permission
+      [action_permission, controller_permission].join('_')
+    end
+
+    def controller_permission
+      'activation_keys'
+    end
+
+    def action_permission
+      super
     end
   end
 end

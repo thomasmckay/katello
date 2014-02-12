@@ -28,6 +28,7 @@ module AuthorizationRules
     rule_set = rules.with_indifferent_access
     allowed = rule_set[action].call if rule_set[action].is_a?(Proc)
     allowed = user.allowed_to?(*rule_set[action]) if rule_set[action].is_a?(Array)
+    allowed = user.allowed_to?(params.slice(:controller, :action, :id)) unless allowed
     return true if allowed
     fail Errors::SecurityViolation, "User #{current_user.login} is not allowed to access #{params[:controller]}/#{params[:action]}"
   end

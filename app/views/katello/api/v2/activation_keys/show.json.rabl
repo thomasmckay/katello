@@ -14,7 +14,9 @@ attributes :usage_count, :user_id, :usage_limit, :pools, :system_template_id
 
 node :permissions do |activation_key|
   {
-    :editable => true
+    :edit => User.current.can?(:edit_activation_keys, activation_key),
+    :delete => User.current.can?(:delete_activation_keys, activation_key),
+    :create => User.current.can?(:create_activation_keys, activation_key)
   }
 end
 

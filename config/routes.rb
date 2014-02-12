@@ -119,6 +119,7 @@ Katello::Engine.routes.draw do
   resources :activation_keys, :only => [:index] do
     collection do
       get :all
+      get :auto_complete_search
     end
   end
 
