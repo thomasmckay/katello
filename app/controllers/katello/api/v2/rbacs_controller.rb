@@ -38,13 +38,11 @@ module Katello
 
     def show
       @role = ::Role.find(params[:id])
-      respond_for_show(:resource => @role)
-    end
-
-    def resource_types(role)
-      role.permissions.collect do |permission|
+      @resource_types = @role.permissions.collect do |permission|
         permission.resource_type
       end.uniq
+
+      respond_for_show(:resource => @role, :locals => {:resource_types => @resource_types})
     end
 
   end
