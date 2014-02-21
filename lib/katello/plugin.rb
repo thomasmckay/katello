@@ -148,4 +148,12 @@ Foreman::Plugin.register :katello do
        :engine => Katello::Engine,
        :parent => :administer_menu,
        :after => :about
+
+
+  security_block :katello do
+    permission :view_rbac_keys,
+               {
+                 :'katello/api/v2/rbac' => [:index],
+               }
+  end
 end
