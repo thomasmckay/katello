@@ -1,0 +1,50 @@
+<span page-title ng-model="role">{{ 'Details for Role:' | translate }} {{ role.name }}</span>
+
+<div class="loading-mask loading-mask-panel" ng-show="panel.loading">
+  <i class="icon-spinner icon-spin"></i>
+  {{ "Loading..." | translate }}
+</div>
+
+<section class="nutupane-details" ng-cloak alch-container-scroll>
+
+  <header class="details-header">
+    <h2 class="fl" translate>Role {{ role.name }}</h2>
+
+    <div class="fr">
+
+      <div alch-modal="removeRole(role)" model="role"
+           modal-header='Remove Role "{{role.name}}"?'
+           modal-body='Are you sure you want to remove role "{{ role.name }}"?'></div>
+
+      <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+         tooltip="{{ 'You cannot remove this role because you do not have permission.' | translate }}"
+         tooltip-append-to-body="true">
+      </i>
+      <button class="btn"
+              ng-class="{'btn-danger': role.permissions.deletable, 'btn-default': !role.permissions.deletable}"
+              ng-hide="role.readonly"
+              ng-click="openModal()"
+              ng-disabled="!role.permissions.deletable">
+        <i class="icon-trash"></i>
+        {{ "Remove Role" | translate }}
+      </button>
+      <button class="btn btn-default" ui-sref="roles.index">
+        <i class="icon-remove"></i>
+        {{ "Close" | translate }}
+      </button>
+    </div>
+  </header>
+
+  <nav>
+    <ul class="nav nav-tabs">
+      <li ng-class="{active: stateIncludes('roles.details.info')}">
+        <a translate
+           ui-sref="roles.details.info({roleId: role.id})">
+          Details
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <section class="nutupane-sub-section" ui-view></section>
+</section>

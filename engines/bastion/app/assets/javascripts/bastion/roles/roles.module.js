@@ -51,7 +51,6 @@ angular.module('Bastion.roles').config(['$stateProvider', function ($stateProvid
         }
     })
 
-/*
     .state('roles.details', {
         abstract: true,
         url: '/roles/:roleId',
@@ -71,6 +70,5 @@ angular.module('Bastion.roles').config(['$stateProvider', function ($stateProvid
         collapsed: true,
         templateUrl: 'roles/details/views/role-info.html'
     });
-*/
 
 }]);

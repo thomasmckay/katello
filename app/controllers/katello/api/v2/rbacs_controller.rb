@@ -17,7 +17,8 @@ module Katello
 
     def rules
       {
-        :index => lambda {true}
+        :index => lambda {true},
+        :show => lambda {true}
       }
     end
 
@@ -33,6 +34,11 @@ module Katello
       }
 
       respond_for_index(:collection => roles)
+    end
+
+    def show
+      @role = ::Role.find(params[:id])
+      respond_for_show(:resource => @role)
     end
 
   end

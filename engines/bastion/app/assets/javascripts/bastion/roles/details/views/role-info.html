@@ -1,0 +1,27 @@
+<span page-title ng-model="role">{{ 'Role information for:' | translate }} {{ role.name }}</span>
+<div alch-alert success-messages="successMessages" error-messages="errorMessages"></div>
+
+<div class="details fl">
+  <section>
+    <h4 translate>Basic Information</h4>
+
+    <div class="detail">
+      <span class="info-label" translate>Name</span>
+      <span class="info-value"
+            alch-edit-text="role.name"
+            on-save="save(role)"
+            readonly="role.readonly">
+      </span>
+    </div>
+
+    <div class="detail">
+      <span class="info-label" translate>Description</span>
+      <span class="info-value"
+            alch-edit-textarea="role.description"
+            on-save="save(role)"
+            readonly="role.readonly">
+      </span>
+    </div>
+
+  </section>
+</div>
