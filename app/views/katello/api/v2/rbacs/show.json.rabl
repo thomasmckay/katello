@@ -2,6 +2,8 @@ object @role
 
 attributes :id, :name
 
-child :permissions => :permissions do
-  extends 'katello/api/v2/rbacs/permission'
+#attributes :resource_types => resource_types(@role)
+
+child :filters => :filters do
+  extends 'katello/api/v2/rbacs/filter'
 end

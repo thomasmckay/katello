@@ -41,5 +41,11 @@ module Katello
       respond_for_show(:resource => @role)
     end
 
+    def resource_types(role)
+      role.permissions.collect do |permission|
+        permission.resource_type
+      end.uniq
+    end
+
   end
 end
