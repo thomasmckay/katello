@@ -28,7 +28,7 @@ angular.module('Bastion.roles').controller('RoleDetailsPermissionsController',
     function ($scope, $location, $q, gettext, Nutupane, Role) {
 
         var params = {
-            'search':           $location.search().search || "",
+            'search':           'role_id = ' + $scope.$stateParams.roleId,
             'sort_by':          'name',
             'sort_order':       'ASC',
             'enabled' :         true,

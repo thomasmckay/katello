@@ -1,17 +1,6 @@
 <span page-title ng-model="role">{{ 'Permissions for:' | translate }} {{ role.name }}</span>
 <div alch-alert success-messages="successMessages" error-messages="errorMessages"></div>
 
-<section>
-  <div class="detail">
-    <span class="info-label" translate>Name</span>
-    <span class="info-value"
-          alch-edit-text="role.name"
-          on-save="save(role)"
-          readonly="role.readonly">
-    </span>
-  </div>
-</section>
-
 <section class="nutupane-sub-section" >
 
   <div class="nutupane-bar">
