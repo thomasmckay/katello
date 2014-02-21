@@ -103,7 +103,7 @@ Katello::Engine.routes.draw do
         end
       end
 
-      api_resources :rbac, :only => [:index]
+      api_resources :rbacs, :only => [:index]
 
       api_resources :repository_sets, :only => [:index] do
         member do

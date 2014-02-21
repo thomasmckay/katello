@@ -141,6 +141,15 @@ Foreman::Plugin.register :katello do
        :after => :roles
 
   menu :admin_menu,
+       :rbac_roles,
+       :caption => N_('RBAC Roles'),
+       :url_hash => {:controller => 'katello/rbacs',
+                     :action => 'all'},
+       :engine => Katello::Engine,
+       :parent => :administer_menu,
+       :after => :roles
+
+  menu :admin_menu,
        :content_about,
        :caption => N_('Content About'),
        :url_hash => {:controller => 'katello/application_info',

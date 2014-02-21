@@ -11,28 +11,23 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 module Katello
-  class Api::V2::RbacController < Api::V2::ApiController
+  class RbacsController < Katello::ApplicationController
 
     before_filter :authorize
 
     def rules
       {
-        :index => lambda {true}
+        :index => lambda {true},
+        :all => lambda {true}
       }
     end
 
     def index
-      results = ::Role.search_for(*search_options).paginate(paginate_options).collect
+      render 'bastion/layouts/application', :layout => false
+    end
 
-      roles = {
-        :results => results,
-        :subtotal => results.count,
-        :total => results.count,
-        :page => 1,
-        :per_page => results.count
-      }
-
-      respond_for_index(:collection => roles)
+    def all
+      redirect_to action: 'index', anchor: '/roles'
     end
 
   end

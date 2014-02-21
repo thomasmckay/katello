@@ -40,6 +40,7 @@ angular.module('Bastion', [
     'Bastion.products',
     'Bastion.providers',
     'Bastion.repositories',
+    'Bastion.roles',
     'Bastion.sync-plans',
     'Bastion.system-groups',
     'Bastion.gpg-keys',

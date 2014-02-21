@@ -128,6 +128,12 @@ Katello::Engine.routes.draw do
     end
   end
 
+  resources :rbacs, :only => [:index] do
+    collection do
+      get :all
+    end
+  end
+
   resources :sync_plans, :only => [:index] do
     collection do
       get :all
