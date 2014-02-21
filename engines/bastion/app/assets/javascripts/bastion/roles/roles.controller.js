@@ -50,5 +50,8 @@ angular.module('Bastion.roles').controller('RolesController',
 
         $scope.table = $scope.roleTable;
 
+        $scope.hasResource = function (name, role) {
+            return _.findWhere(role.permissions, {resource_type: name}) !== undefined ? 'X' : '';
+        };
     }]
 );

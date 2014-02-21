@@ -2,6 +2,209 @@
   <thead>
     <tr alch-table-head row-select>
       <th alch-table-column="name" sortable>{{ "Name" | translate }}</th>
+      <th alch-table-column="architecture" sortable>
+        {{ A }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Architecture' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="audit" sortable>
+        {{ A }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Audit' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="authsourceldap" sortable>
+        {{ A }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'AuthSourceLdap' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="bookmark" sortable>
+        {{ B }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Bookmark' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="computeresource" sortable>
+        {{ C }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'ComputeResource' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="configtemplate" sortable>
+        {{ C }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'ConfigTemplate' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="domain" sortable>
+        {{ D }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Domain' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="environment" sortable>
+        {{ E }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Environment' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="lookupkey" sortable>
+        {{ L }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'LookupKey' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="factvalue" sortable>
+        {{ F }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'FactValue' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="commonparameter" sortable>
+        {{ C }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'CommonParameter' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="hostclass" sortable>
+        {{ H }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'HostClass' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="parameter" sortable>
+        {{ P }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Parameter' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="hostgroup" sortable>
+        {{ H }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Hostgroup' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="host" sortable>
+        {{ H }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Host' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="image" sortable>
+        {{ I }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Image' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="location" sortable>
+        {{ L }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Location' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="medium" sortable>
+        {{ M }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Medium' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="model" sortable>
+        {{ M }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Model' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="operatingsystem" sortable>
+        {{ O }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Operatingsystem' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="organization" sortable>
+        {{ O }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Organization' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="ptable" sortable>
+        {{ P }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Ptable' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="puppetclass" sortable>
+        {{ P }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Puppetclass' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="report" sortable>
+        {{ R }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Report' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="smartproxy" sortable>
+        {{ S }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'SmartProxy' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="subnet" sortable>
+        {{ S }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Subnet' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="trend" sortable>
+        {{ T }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Trend' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="usergroup" sortable>
+        {{ U }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'Usergroup' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
+      <th alch-table-column="user" sortable>
+        {{ U }}
+        <i class="icon-question-sign" ng-show="!role.permissions.deletable"
+           tooltip="{{ 'User' | translate }}"
+           tooltip-append-to-body="true">
+        </i>
+      </th>
     </tr>
   </thead>
 
@@ -13,6 +216,35 @@
         </a>
         <i class="icon-chevron-right selected-icon" ng-show="role.selected"></i>
       </td>
+      <td alch-table-cell>{{ hasResource('Architecture', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Audit', role) }}</td>
+      <td alch-table-cell>{{ hasResource('AuthSourceLdap', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Bookmark', role) }}</td>
+      <td alch-table-cell>{{ hasResource('ComputeResource', role) }}</td>
+      <td alch-table-cell>{{ hasResource('ConfigTemplate', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Domain', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Environment', role) }}</td>
+      <td alch-table-cell>{{ hasResource('LookupKey', role) }}</td>
+      <td alch-table-cell>{{ hasResource('FactValue', role) }}</td>
+      <td alch-table-cell>{{ hasResource('CommonParameter', role) }}</td>
+      <td alch-table-cell>{{ hasResource('HostClass', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Parameter', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Hostgroup', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Host', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Image', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Location', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Medium', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Model', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Operatingsystem', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Organization', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Ptable', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Puppetclass', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Report', role) }}</td>
+      <td alch-table-cell>{{ hasResource('SmartProxy', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Subnet', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Trend', role) }}</td>
+      <td alch-table-cell>{{ hasResource('Usergroup', role) }}</td>
+      <td alch-table-cell>{{ hasResource('User', role) }}</td>
     </tr>
   </tbody>
 </table>
