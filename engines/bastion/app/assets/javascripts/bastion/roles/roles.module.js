@@ -50,7 +50,6 @@ angular.module('Bastion.roles').config(['$stateProvider', function ($stateProvid
             }
         }
     })
-
     .state('roles.details', {
         abstract: true,
         url: '/roles/:roleId',
@@ -76,4 +75,24 @@ angular.module('Bastion.roles').config(['$stateProvider', function ($stateProvid
         controller: 'RoleDetailsPermissionsController',
         templateUrl: 'roles/details/views/role-permissions.html'
     });
+
+    $stateProvider.state("roles.bulk-actions", {
+        abstract: true,
+        collapsed: true,
+        views: {
+            'table': {
+                templateUrl: 'roles/views/roles-table-collapsed.html'
+            },
+            'action-panel': {
+                controller: 'RolesBulkActionController',
+                templateUrl: 'roles/bulk/views/bulk-actions.html'
+            }
+        }
+    })
+    .state('roles.bulk-actions.packages', {
+        url: '/roles/bulk-actions/apply',
+        collapsed: true,
+        controller: 'RolesBulkActionApplyController',
+        templateUrl: 'roles/bulk/views/bulk-actions-apply.html'
+    })
 }]);

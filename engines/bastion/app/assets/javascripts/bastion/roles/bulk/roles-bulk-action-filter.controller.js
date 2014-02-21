@@ -9,24 +9,24 @@
  * NON-INFRINGEMENT, or FITNESS FOR A PARTICULAR PURPOSE. You should
  * have received a copy of GPLv2 along with this software; if not, see
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
- **/
+ */
 
 /**
- * @ngdoc service
- * @name  Bastion.roles.factory:Role
+ * @ngdoc object
+ * @name  Bastion.roles.controller:RolesBulkActionEnvironmentController
  *
- * @requires $resource
+ * @requires $scope
+ * @requires Role
+ * @requires Organization
  * @requires CurrentOrganization
+ * @requires ContentView
  *
  * @description
- *   Provides a $resource for a role or list of roles
+ *   A controller for providing bulk action functionality for setting content view and environment
  */
-angular.module('Bastion.roles').factory('Role', ['$resource',
-    function ($resource) {
-        return $resource('/api/v2/rbacs/:id/:action', {id: '@id'}, {
-            query: {method: 'GET'},
-            removeRoles: {method: 'GET', params: {action: 'filter'}},  // TODO 
-            filter: {method: 'GET', params: {action: 'filter'}},
-        });
+angular.module('Bastion.roles').controller('RolesBulkActionEnvironmentController',
+    ['$scope', 'Role', 'Organization', 'CurrentOrganization',
+    function ($scope, Role, Organization, CurrentOrganization) {
+
     }]
 );
