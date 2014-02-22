@@ -42,7 +42,7 @@ module Katello
         permission.resource_type
       end.uniq
 
-      respond_for_show(:resource => @role, :locals => {:resource_types => @resource_types})
+      respond_for_show(:resource => @role)
     end
 
   end

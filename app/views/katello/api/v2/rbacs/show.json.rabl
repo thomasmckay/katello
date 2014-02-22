@@ -2,7 +2,9 @@ object @role
 
 attributes :id, :name
 
-attributes :resource_types => @resource_types
+node :resource_types do
+     @resource_types
+end
 
 child :filters => :filters do
   extends 'katello/api/v2/rbacs/filter'
