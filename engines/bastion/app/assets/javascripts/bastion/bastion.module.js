@@ -22,7 +22,8 @@
 angular.module('Bastion', [
     'ui.router',
     'Bastion.i18n',
-    'Bastion.widgets'
+    'Bastion.widgets',
+    'Roles.roles'
 ]);
 
 /**
