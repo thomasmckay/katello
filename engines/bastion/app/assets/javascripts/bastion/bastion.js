@@ -98,3 +98,9 @@
 
 //= require "bastion/activation-keys/activation-keys.module.js"
 //= require_tree "./activation-keys"
+
+//= require "architectures/architectures.js"
+//= require "roles/roles.js"
+//= require "users/users.js"
+//= require "splice/splice.js"
+

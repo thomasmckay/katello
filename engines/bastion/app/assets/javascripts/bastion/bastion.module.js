@@ -45,7 +45,11 @@ angular.module('Bastion', [
     'Bastion.gpg-keys',
     'Bastion.tasks',
     'Bastion.widgets',
-    'templates'
+    'templates',
+    'Architectures.architectures',
+    'Users.users',
+    'Roles.roles',
+    'Splice.reports'
 
 ]);
 
