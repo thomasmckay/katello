@@ -23,7 +23,7 @@ module Actions
           activation_key_plan = plan_action(Katello::System::ActivationKeys, system, activation_keys)
           return if activation_key_plan.error
 
-          cp_create = plan_action(Candlepin::Consumer::Create,
+          cp_create_plan = plan_action(Candlepin::Consumer::Create,
                                   cp_environment_id:   system.cp_environment_id,
                                   organization_label:  system.organization.label,
                                   name:                system.name,
@@ -36,11 +36,12 @@ module Actions
                                   uuid:                system.uuid,
                                   capabilities:        system.capabilities,
                                   activation_keys:     activation_keys)
+          return if cp_create_plan.error
           system.save!
-          action_subject system, uuid: cp_create.output[:response][:uuid]
+          action_subject system, uuid: cp_create_plan.output[:response][:uuid]
           plan_self
           plan_action(Pulp::Consumer::Create,
-                      uuid: cp_create.output[:response][:uuid],
+                      uuid: cp_create_plan.output[:response][:uuid],
                       name: system.name)
           plan_action ElasticSearch::Reindex, system
         end

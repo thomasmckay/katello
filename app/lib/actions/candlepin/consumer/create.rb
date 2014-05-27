@@ -30,19 +30,27 @@ module Actions
         end
 
         def run
-          output[:response] = ::Katello::Resources::Candlepin::Consumer.
-              create(input[:cp_environment_id],
-                     input[:organization_label],
-                     input[:name],
-                     input[:cp_type],
-                     input[:facts],
-                     input[:installed_products],
-                     input[:autoheal],
-                     input[:release_ver],
-                     input[:service_level],
-                     input[:uuid],
-                     input[:capabilities],
-                     input[:activation_keys])
+          output[:response] = @response
+        end
+
+        # In order to prevent creating content host activerecords that are not backed by candlepin
+        # consumers, the creation in candlepin is done during the plan phase
+        def plan(options)
+          the_plan = super(options)
+          @response = ::Katello::Resources::Candlepin::Consumer.
+              create(options[:cp_environment_id],
+                     options[:organization_label],
+                     options[:name],
+                     options[:cp_type],
+                     options[:facts],
+                     options[:installed_products],
+                     options[:autoheal],
+                     options[:release_ver],
+                     options[:service_level],
+                     options[:uuid],
+                     options[:capabilities],
+                     options[:activation_keys])
+          the_plan
         end
       end
     end
