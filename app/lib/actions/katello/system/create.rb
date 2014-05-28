@@ -37,10 +37,11 @@ module Actions
                                     uuid:                system.uuid,
                                     capabilities:        system.capabilities,
                                     activation_keys:     activation_keys }
-          system.save!
-          action_subject system
-
           cp_create = plan_action(Candlepin::Consumer::Create, consumer_create_input)
+          return if cp_create.error
+
+          system.save!
+          action_subject system, uuid: cp_create.output[:response][:uuid]
           plan_self(uuid: cp_create.output[:response][:uuid])
           plan_action(Pulp::Consumer::Create,
                       uuid: cp_create.output[:response][:uuid],
