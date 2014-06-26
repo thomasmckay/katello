@@ -112,3 +112,4 @@
 //= require "bastion/bastion-bootstrap"
 
 //= require "roles/roles.js"
+
