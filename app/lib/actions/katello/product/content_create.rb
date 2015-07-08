@@ -7,17 +7,20 @@ module Actions
         def plan(repository)
           sequence do
             content_create = plan_action(Candlepin::Product::ContentCreate,
+                                         owner:       repository.organization.label,
                                          name:        repository.name,
                                          type:        repository.content_type,
                                          label:       repository.custom_content_label,
                                          content_url: content_url(repository))
 
             plan_action(Candlepin::Product::ContentAdd,
+                        owner:      repository.organization.label,
                         product_id: repository.product.cp_id,
                         content_id: content_create.output[:response][:id])
 
             if repository.gpg_key
               plan_action(Candlepin::Product::ContentUpdate,
+                          owner:       repository.organization.label,
                           content_id:  content_create.output[:response][:id],
                           name:        repository.name,
                           type:        repository.content_type,

@@ -471,37 +471,38 @@ module Katello
 
       class Environment < CandlepinResource
         class << self
-          def find(id)
-            JSON.parse(self.get(path(id), self.default_headers).body).with_indifferent_access
+          def find(owner, id)
+            x = JSON.parse(self.get(path(owner, id), self.default_headers).body).with_indifferent_access
+            x
           end
 
-          def all
-            JSON.parse(self.get(path, self.default_headers).body).collect { |a| a.with_indifferent_access }
+          def all(owner)
+            JSON.parse(self.get(path(owner), self.default_headers).body).collect { |a| a.with_indifferent_access }
           end
 
-          def create(owner_id, id, name, description)
+          def create(owner, id, name, description)
             attrs = {:id => id, :name => name, :description => description}
-            path = "/candlepin/owners/#{owner_id}/environments"
-            environment_json = self.post(path, attrs.to_json, self.default_headers).body
+            environment_json = self.post(path(owner), attrs.to_json, self.default_headers).body
             JSON.parse(environment_json).with_indifferent_access
           end
 
-          def destroy(id)
-            self.delete(path(id), User.cp_oauth_header).code.to_i
+          def destroy(owner, id)
+            self.delete(path(owner, id), User.cp_oauth_header).code.to_i
           end
 
-          def path(id = '')
+          def path(owner, id = '')
+            #"/candlepin/owners/#{owner}/environments/#{id}"
             "/candlepin/environments/#{id}"
           end
 
-          def add_content(env_id, content_ids)
-            path = self.path(env_id) + "/content"
+          def add_content(owner, env_id, content_ids)
+            path = self.path(owner, env_id) + "/content"
             params = content_ids.map { |content_id| {:contentId => content_id} }
             JSON.parse(self.post(path, params.to_json, self.default_headers).body).with_indifferent_access
           end
 
-          def delete_content(env_id, content_ids)
-            path = self.path(env_id) + "/content"
+          def delete_content(owner, env_id, content_ids)
+            path = self.path(owner, env_id) + "/content"
             params = content_ids.map { |content_id| {:content => content_id}.to_param }.join("&")
             self.delete("#{path}?#{params}", self.default_headers).code.to_i
           end
@@ -546,31 +547,31 @@ module Katello
 
       class Content < CandlepinResource
         class << self
-          def create(attrs)
-            JSON.parse(self.post(path, JSON.generate(attrs), self.default_headers).body).with_indifferent_access
+          def create(owner, attrs)
+            JSON.parse(self.post(path(owner), JSON.generate(attrs), self.default_headers).body).with_indifferent_access
           end
 
-          def get(id)
-            content_json = super(path(id), self.default_headers).body
+          def get(owner, id)
+            content_json = super(path(owner, id), self.default_headers).body
             JSON.parse(content_json).with_indifferent_access
           end
 
-          def all
-            content_json = Candlepin::CandlepinResource.get(path, self.default_headers).body
+          def all(owner)
+            content_json = Candlepin::CandlepinResource.get(path(owner), self.default_headers).body
             JSON.parse(content_json)
           end
 
-          def destroy(id)
+          def destroy(owner, id)
             fail ArgumentError, "content id has to be specified" unless id
-            self.delete(path(id), self.default_headers).code.to_i
+            self.delete(path(owner, id), self.default_headers).code.to_i
           end
 
-          def update(attrs)
-            JSON.parse(self.put(path(attrs[:id] || attrs['id']), JSON.generate(attrs), self.default_headers).body).with_indifferent_access
+          def update(owner, attrs)
+            JSON.parse(self.put(path(owner, attrs[:id] || attrs['id']), JSON.generate(attrs), self.default_headers).body).with_indifferent_access
           end
 
-          def path(id = nil)
-            "/candlepin/content/#{id}"
+          def path(owner, id = nil)
+            "/candlepin/owners/#{owner}/content/#{id}"
           end
         end
       end
@@ -631,22 +632,23 @@ module Katello
 
       class Product < CandlepinResource
         class << self
-          def all
-            JSON.parse(Candlepin::CandlepinResource.get(path, self.default_headers).body)
+          def all(owner)
+            JSON.parse(Candlepin::CandlepinResource.get(path(owner), self.default_headers).body)
           end
 
-          def create(attr)
-            JSON.parse(self.post(path, attr.to_json, self.default_headers).body).with_indifferent_access
+          def create(owner, attr)
+            attr[:id] = "KT#{SecureRandom.hex(10)}"
+            JSON.parse(self.post(path(owner), attr.to_json, self.default_headers).body).with_indifferent_access
           end
 
-          def get(id = nil)
-            products_json = super(path(id), self.default_headers).body
+          def get(owner, id = nil)
+            products_json = super(path(owner, id), self.default_headers).body
             products = JSON.parse(products_json)
             products = [products] unless id.nil?
             Util::Data.array_with_indifferent_access products
           end
 
-          def _certificate_and_key(id, owner)
+          def _certificate_and_key(owner, id)
             subscriptions_json = Candlepin::CandlepinResource.get("/candlepin/owners/#{owner}/subscriptions", self.default_headers).body
             subscriptions = JSON.parse(subscriptions_json)
 
@@ -661,28 +663,28 @@ module Katello
             end
           end
 
-          def certificate(id, owner)
-            self._certificate_and_key(id, owner).try :[], 'cert'
+          def certificate(owner, id)
+            self._certificate_and_key(owner, id).try :[], 'cert'
           end
 
-          def key(id, owner)
-            self._certificate_and_key(id, owner).try :[], 'key'
+          def key(owner, id)
+            self._certificate_and_key(owner, id).try :[], 'key'
           end
 
-          def destroy(product_id)
+          def destroy(owner, product_id)
             fail ArgumentError, "product id has to be specified" unless product_id
-            self.delete(path(product_id), self.default_headers).code.to_i
+            self.delete(path(owner, product_id), self.default_headers).code.to_i
           end
 
-          def add_content(product_id, content_id, enabled)
-            self.post(join_path(path(product_id), "content/#{content_id}?enabled=#{enabled}"), nil, self.default_headers).code.to_i
+          def add_content(owner, product_id, content_id, enabled)
+            self.post(join_path(path(owner, product_id), "content/#{content_id}?enabled=#{enabled}"), nil, self.default_headers).code.to_i
           end
 
-          def remove_content(product_id, content_id)
-            self.delete(join_path(path(product_id), "content/#{content_id}"), self.default_headers).code.to_i
+          def remove_content(owner, product_id, content_id)
+            self.delete(join_path(path(owner, product_id), "content/#{content_id}"), self.default_headers).code.to_i
           end
 
-          def create_unlimited_subscription(owner_key, product_id)
+          def create_unlimited_subscription(owner, product_id)
             start_date ||= DateTime.now
             # End it 100 years from now
             end_date ||= start_date + 10_950
@@ -696,16 +698,16 @@ module Katello
               'providedProducts' => [],
               'contractNumber' => ''
             }
-            Candlepin::Subscription.create_for_owner owner_key, subscription
+            Candlepin::Subscription.create_for_owner owner, subscription
           end
 
-          def pools(owner_key, product_id)
-            Candlepin::Pool.get_for_owner(owner_key).find_all { |pool| pool['productId'] == product_id }
+          def pools(owner, product_id)
+            Candlepin::Pool.get_for_owner(owner).find_all { |pool| pool['productId'] == product_id }
           end
 
-          def delete_subscriptions(owner_key, product_id)
+          def delete_subscriptions(owner, product_id)
             update_subscriptions = false
-            subscriptions = Candlepin::Subscription.get_for_owner owner_key
+            subscriptions = Candlepin::Subscription.get_for_owner owner
             subscriptions.each do |s|
               products = ([s['product']] + s['providedProducts'])
               products.each do |p|
@@ -718,14 +720,14 @@ module Katello
             end
 
             if update_subscriptions
-              return Candlepin::Subscription.refresh_for_owner owner_key
+              return Candlepin::Subscription.refresh_for_owner owner
             else
               return nil
             end
           end
 
-          def path(id = nil)
-            "/candlepin/products/#{id}"
+          def path(owner, id = nil)
+            "/candlepin/owners/#{owner}/products/#{id}"
           end
         end
       end

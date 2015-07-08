@@ -3,6 +3,7 @@ module Actions
     module Product
       class ContentUpdate < Candlepin::Abstract
         input_format do
+          param :owner
           param :content_id
           param :name
           param :type
@@ -13,7 +14,8 @@ module Actions
 
         def run
           output[:response] = ::Katello::Resources::Candlepin::Content.
-              update(id: input[:content_id],
+              update(input[:owner],
+                     id: input[:content_id],
                      name: input[:name],
                      contentUrl: input[:content_url],
                      gpgUrl: input[:gpg_key_url],

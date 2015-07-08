@@ -8,7 +8,7 @@ module Katello
 
     module InstanceMethods
       def candlepin_info
-        Resources::Candlepin::Environment.find(self.cp_id)
+        Resources::Candlepin::Environment.find(self.organization.label, self.cp_id)
       end
 
       def content_ids

@@ -8,25 +8,25 @@ module Katello
     end
 
     def self.find(id)
-      found = Resources::Candlepin::Content.get(id)
+      found = Resources::Candlepin::Content.get(self.organization.label, id)
       Candlepin::Content.new(found)
     end
 
     def create
-      created = Resources::Candlepin::Content.create self
+      created = Resources::Candlepin::Content.create(self.organization.label, self)
       load_attributes(created)
 
       self
     end
 
     def destroy
-      Resources::Candlepin::Content.destroy(@id)
+      Resources::Candlepin::Content.destroy(self.organization.label, @id)
     end
 
     def update(params = {})
       return self if params.empty?
 
-      updated = Resources::Candlepin::Content.update(params.merge(:id => @id))
+      updated = Resources::Candlepin::Content.update(self.organization.label, params.merge(:id => @id))
       load_attributes(updated)
 
       self

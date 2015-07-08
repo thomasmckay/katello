@@ -7,6 +7,7 @@ module Actions
           product.organization = organization
 
           cp_create = plan_action(::Actions::Candlepin::Product::Create,
+                                  :owner_key => organization.label,
                                   :name => product.name,
                                   :multiplier => 1,
                                   :attributes => [{:name => "arch", :value => "ALL"}])

@@ -3,6 +3,7 @@ module Actions
     module Product
       class ContentCreate < Candlepin::Abstract
         input_format do
+          param :owner
           param :name
           param :type
           param :label
@@ -11,12 +12,13 @@ module Actions
 
         def run
           output[:response] = ::Katello::Resources::Candlepin::Content.
-              create(name: input[:name],
+              create(input[:owner],
+                     {name: input[:name],
                      contentUrl: input[:content_url],
                      type: input[:type],
                      label: input[:label],
                      metadataExpire: 1,
-                     vendor: ::Katello::Provider::CUSTOM)
+                     vendor: ::Katello::Provider::CUSTOM})
         end
       end
     end

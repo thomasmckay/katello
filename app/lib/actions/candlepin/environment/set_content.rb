@@ -3,14 +3,15 @@ module Actions
     module Environment
       class SetContent < Candlepin::Abstract
         input_format do
+          param :owner
           param :cp_environment_id
           param :content_ids, Array
         end
 
         def existing_ids
           ::Katello::Resources::Candlepin::Environment.
-              find(input[:cp_environment_id])[:environmentContent].map do |content|
-            content[:contentId]
+              find(input[:owner], input[:cp_environment_id])[:environmentContent].map do |content|
+            content[:content][:id]
           end
         end
 
@@ -23,7 +24,7 @@ module Actions
           until output[:add_ids].empty?
             begin
               output[:add_response] = ::Katello::Resources::Candlepin::Environment.
-                add_content(input[:cp_environment_id], output[:add_ids])
+                add_content(input[:owner], input[:cp_environment_id], output[:add_ids])
               break
             rescue RestClient::Conflict => e
               retries += 1
@@ -39,7 +40,7 @@ module Actions
           until output[:delete_ids].empty?
             begin
               output[:delete_response] = ::Katello::Resources::Candlepin::Environment.
-                  delete_content(input[:cp_environment_id], output[:delete_ids])
+                  delete_content(input[:owner], input[:cp_environment_id], output[:delete_ids])
               break
             rescue RestClient::ResourceNotFound => e
               retries += 1

@@ -10,6 +10,7 @@ module Actions
           # additional argument
           content_ids << new_content_id if new_content_id && !content_ids.include?(new_content_id)
           plan_action(Candlepin::Environment::SetContent,
+                      owner: content_view.organization.label,
                       cp_environment_id: view_env.cp_id,
                       content_ids:       content_ids)
 

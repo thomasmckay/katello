@@ -6,7 +6,7 @@ module Katello
 
       base.class_eval do
         lazy_accessor :productContent, :multiplier, :href, :attrs,
-          :initializer => lambda { |_s| convert_from_cp_fields(Resources::Candlepin::Product.get(cp_id)[0]) }
+          :initializer => lambda { |_s| convert_from_cp_fields(Resources::Candlepin::Product.get(self.organization.label, cp_id)[0]) }
         # Entitlement Certificate for this product
         lazy_accessor :certificate,
           :initializer => lambda { |_s| Resources::Candlepin::Product.certificate(cp_id, self.organization.label) },
@@ -135,7 +135,7 @@ module Katello
       end
 
       def add_content(content)
-        Resources::Candlepin::Product.add_content self.cp_id, content.content.id, true
+        Resources::Candlepin::Product.add_content(self.organization.label, self.cp_id, content.content.id, true)
         self.productContent << content
       end
 
