@@ -25,7 +25,7 @@ module Katello
     after_rollback :rollback_on_create, :on => :create
 
     belongs_to :environment, :class_name => "Katello::KTEnvironment", :inverse_of => :systems
-    belongs_to :foreman_host, :class_name => "::Host", :foreign_key => :host_id, :inverse_of => :content_host
+    belongs_to :foreman_host, :class_name => "::Host::Managed", :foreign_key => :host_id, :inverse_of => :content_host
 
     has_many :applicable_errata, :through => :system_errata, :class_name => "Katello::Erratum", :source => :erratum
     has_many :system_errata, :class_name => "Katello::SystemErratum", :dependent => :destroy, :inverse_of => :system
@@ -33,7 +33,6 @@ module Katello
     has_many :bound_repositories, :through => :system_repositories, :class_name => "Katello::Repository", :source => :repository
     has_many :system_repositories, :class_name => "Katello::SystemRepository", :dependent => :destroy, :inverse_of => :system
 
-    has_many :task_statuses, :class_name => "Katello::TaskStatus", :as => :task_owner, :dependent => :destroy
     has_many :system_activation_keys, :class_name => "Katello::SystemActivationKey", :dependent => :destroy
     has_many :activation_keys,
                                  :through => :system_activation_keys,
@@ -232,8 +231,6 @@ module Katello
 
       self.bound_repositories = repos
       self.save!
-      self.propagate_yum_repos
-      self.generate_applicability
     end
 
     def install_packages(packages)

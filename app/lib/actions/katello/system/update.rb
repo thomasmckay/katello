@@ -8,17 +8,17 @@ module Actions
           system.disable_auto_reindex!
           action_subject system
           system.update_attributes!(sys_params)
-          sequence do
-            concurrence do
-              plan_action(::Actions::Pulp::Consumer::Update, system) if !system.hypervisor? && ::Katello.config.use_pulp
-              plan_action(::Actions::Candlepin::Consumer::Update, system) if ::Katello.config.use_cp
-            end
-
-            if sys_params[:autoheal] && ::Katello.config.use_cp
-              plan_action(::Actions::Candlepin::Consumer::AutoAttachSubscriptions, system)
-            end
-            plan_action(ElasticSearch::Reindex, system) if ::Katello.config.use_elasticsearch
+          if system.foreman_host.content_aspect
+            system.foreman_host.content_aspect.content_view = system.content_view
+            system.foreman_host.content_aspect.lifecycle_environment = system.environment
           end
+
+          if system.foreman_host.subscription_aspect
+            system.foreman_host.subscription_aspect.service_level = system.serviceLevel
+            system.foreman_host.subscription_aspect.autoheal = system.autoheal
+          end
+
+          plan_action(::Actions::Katello::Host::Update, system.foreman_host)
         end
       end
     end
