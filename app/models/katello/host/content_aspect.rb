@@ -13,6 +13,8 @@ module Katello
       has_many :bound_repositories, :through => :content_aspect_repositories, :class_name => "Katello::Repository", :source => :repository
       has_many :content_aspect_repositories, :class_name => "Katello::ContentAspectRepository", :dependent => :destroy, :inverse_of => :content_aspect
 
+      validates :content_view, :presence => true, :allow_blank => false
+      validates :lifecycle_environment, :presence => true, :allow_blank => false
       validates_with Validators::ContentViewEnvironmentValidator
 
       def update_repositories_by_path(paths)

@@ -11,7 +11,7 @@ module Katello
         scoped_search :in => :content_view, :on => :name, :complete_value => true, :rename => :content_view
         scoped_search :in => :lifecycle_environment, :on => :name, :complete_value => true, :rename => :lifecycle_environment
 
-        accepts_nested_attributes_for :content_aspect
+        accepts_nested_attributes_for :content_aspect, :reject_if => proc { |attributes| attributes['content_view_id'].blank? && attributes['lifecycle_environment_id'].blank? }
       end
     end
   end

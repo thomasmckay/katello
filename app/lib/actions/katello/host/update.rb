@@ -6,7 +6,8 @@ module Actions
 
         def plan(host, consumer_params = nil)
           action_subject host
-          host.save!
+          host.content_aspect.save!
+          host.subscription_aspect.save!
 
           if consumer_params
             host.subscription_aspect.update_from_consumer_attributes(consumer_params)

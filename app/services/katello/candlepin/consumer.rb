@@ -17,6 +17,10 @@ module Katello
         raise e
       end
 
+      def backend_data
+        Resources::Candlepin::Consumer.get(uuid)
+      end
+
       def checkin(checkin_time)
         Resources::Candlepin::Consumer.checkin(self.uuid, checkin_time)
       end
