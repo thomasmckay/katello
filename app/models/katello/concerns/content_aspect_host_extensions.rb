@@ -5,9 +5,10 @@ module Katello
 
       included do
         has_one :content_aspect, :class_name => '::Katello::Host::ContentAspect', :foreign_key => :host_id, :inverse_of => :host, :dependent =>  :destroy
+
+        #associations for simpler scoped searches
         has_one :content_view, :through => :content_aspect
         has_one :lifecycle_environment, :through => :content_aspect
-
         scoped_search :in => :content_view, :on => :name, :complete_value => true, :rename => :content_view
         scoped_search :in => :lifecycle_environment, :on => :name, :complete_value => true, :rename => :lifecycle_environment
 

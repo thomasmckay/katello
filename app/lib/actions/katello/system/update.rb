@@ -24,7 +24,7 @@ module Actions
           plan_action(::Actions::Katello::Host::Update, system.foreman_host)
 
           host = system.foreman_host
-          if host && host.lifecycle_environment && host.content_view && reset_puppet_env
+          if host && host.content_aspect.try(:lifecycle_environment) && host.content_aspect.try(:content_view) && reset_puppet_env
             host.environment = system.content_view.puppet_env(system.environment).try(:puppet_environment) || host.environment
             host.save!
           end

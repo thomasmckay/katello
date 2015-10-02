@@ -44,7 +44,7 @@ module Katello
         Resources::Candlepin::Consumer.stubs(:get)
 
         System.expects(:new).returns(system)
-        ::Host::Managed.expects(:new_from_rhsm_params).returns(host)
+        ::Katello::Host::SubscriptionAspect.expects(:new_host_from_rhsm_params).returns(host)
         assert_sync_task(::Actions::Katello::Host::Register, host, system, {'facts' => @facts}, nil, [@activation_key])
 
         post(:consumer_activate, :organization_id => @activation_key.organization.label,
@@ -66,7 +66,7 @@ module Katello
         Resources::Candlepin::Consumer.stubs(:get)
 
         System.expects(:new).returns(system)
-        ::Host::Managed.expects(:new_from_rhsm_params).returns(host)
+        ::Katello::Host::SubscriptionAspect.expects(:new_host_from_rhsm_params).returns(host)
         assert_sync_task(::Actions::Katello::Host::Register, host, system, {'facts' => @facts}, @content_view_environment)
 
         post(:consumer_create, :organization_id => @content_view_environment.content_view.organization.label,
@@ -101,7 +101,7 @@ module Katello
       end
 
       it "should bind all" do
-        Host::ContentAspect.any_instance.expects(:update_repositories_by_path).with(["/pulp/repos/foo", "/pulp/repos/bar"])
+        Host::ContentAspect.any_instance.expects(:update_repositories_by_paths).with(["/pulp/repos/foo", "/pulp/repos/bar"])
         System.any_instance.expects(:save_bound_repos_by_path!).with(["/pulp/repos/foo", "/pulp/repos/bar"])
         put :enabled_repos, :id => @host.subscription_aspect.uuid, :enabled_repos => enabled_repos
         assert_equal 200, response.status

@@ -17,6 +17,3 @@ module Katello
     end
   end
 end
-
-class ::Host::Managed::Jail < Safemode::Jail
-end

@@ -179,7 +179,7 @@ module Katello
       result = nil
       User.as_anonymous_admin do
         @host.content_host.save_bound_repos_by_path!(paths.compact)
-        result = @host.content_aspect.update_repositories_by_path(paths.compact)
+        result = @host.content_aspect.update_repositories_by_paths(paths.compact)
       end
 
       respond_for_show :resource => result
@@ -188,11 +188,11 @@ module Katello
     #api :POST, "/environments/:environment_id/consumers", N_("Register a consumer in environment")
     def consumer_create
       content_view_environment = find_content_view_environment
-      foreman_host = find_or_create_foreman_host(content_view_environment.environment.organization)
+      host = find_or_create_host(content_view_environment.environment.organization)
 
-      sync_task(::Actions::Katello::Host::Register, foreman_host, System.new, system_params, content_view_environment)
-      foreman_host.reload
-      render :json => Resources::Candlepin::Consumer.get(foreman_host.subscription_aspect.uuid)
+      sync_task(::Actions::Katello::Host::Register, host, System.new, rhsm_params, content_view_environment)
+      host.reload
+      render :json => Resources::Candlepin::Consumer.get(host.subscription_aspect.uuid)
     end
 
     #api :DELETE, "/consumers/:id", N_("Unregister a consumer")
@@ -212,12 +212,12 @@ module Katello
       # Set it before calling find_activation_keys to allow communication with candlepin
       User.current    = User.anonymous_admin
       activation_keys = find_activation_keys
-      foreman_host    = find_or_create_foreman_host(activation_keys.first.organization)
+      host    = find_or_create_host(activation_keys.first.organization)
 
-      sync_task(::Actions::Katello::Host::Register, foreman_host, System.new, system_params, nil, activation_keys)
-      foreman_host.reload
+      sync_task(::Actions::Katello::Host::Register, host, System.new, rhsm_params, nil, activation_keys)
+      host.reload
 
-      render :json => Resources::Candlepin::Consumer.get(foreman_host.subscription_aspect.uuid)
+      render :json => Resources::Candlepin::Consumer.get(host.subscription_aspect.uuid)
     end
 
     #api :GET, "/status", N_("Shows version information")
@@ -237,7 +237,7 @@ module Katello
 
     def facts
       User.as_anonymous_admin do
-        sync_task(::Actions::Katello::Host::Update, @host, system_params)
+        sync_task(::Actions::Katello::Host::Update, @host, rhsm_params)
       end
       render :json => {:content => _("Facts successfully updated.")}, :status => 200
     end
@@ -256,11 +256,11 @@ module Katello
       params[:organization_id] = params[:owner] if params[:owner]
     end
 
-    def find_host(uuid = nil)
-      aspect = Katello::Host::SubscriptionAspect.where(:uuid => uuid || params[:id]).first
+    def find_host
+      aspect = Katello::Host::SubscriptionAspect.where(:uuid => params[:id]).first
       if aspect.nil?
         # check with candlepin if consumer is Gone, raises RestClient::Gone
-        Resources::Candlepin::Consumer.get params[:id]
+        Resources::Candlepin::Consumer.get(params[:id])
         fail HttpErrors::NotFound, _("Couldn't find consumer '%s'") % params[:id]
       end
       @host = aspect.host
@@ -354,10 +354,10 @@ module Katello
       activation_keys
     end
 
-    def find_or_create_foreman_host(organization)
+    def find_or_create_host(organization)
       hosts = ::Host.where(:name => params[:facts]['network.hostname'])
       if hosts.empty? #no host exists
-        ::Host::Managed.new_from_rhsm_params(system_params, organization, Location.default_location)
+        Katello::Host::SubscriptionAspect.new_host_from_rhsm_params(rhsm_params, organization, Location.default_location)
       elsif hosts.where(:organization_id => organization.id).empty? #not in the correct org
         #TODO
         fail "Can't handle registering to host in a different org, need to handle this case."
@@ -394,7 +394,7 @@ module Katello
       environments
     end
 
-    def system_params
+    def rhsm_params
       params.slice(:name, :type, :facts, :installedProducts, :autoheal, :releaseVer, :serviceLevel, :uuid, :capabilities, :guestIds, :lastCheckin)
     end
 

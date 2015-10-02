@@ -14,8 +14,8 @@ module Actions
             host.subscription_aspect.save!
           else
             consumer_params = host.subscription_aspect.consumer_attributes
-            host.content_host.content_view = host.content_view
-            host.content_host.environment = host.lifecycle_environment
+            host.content_host.content_view = host.content_aspect.try(:content_view)
+            host.content_host.environment = host.content_aspect.try(:lifecycle_environment)
             host.content_host.save!
           end
 

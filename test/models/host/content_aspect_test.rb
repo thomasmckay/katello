@@ -56,19 +56,19 @@ module Katello
       content_aspect.expects(:propagate_yum_repos)
       content_aspect.bound_repositories << repo
 
-      content_aspect.update_repositories_by_path([])
+      content_aspect.update_repositories_by_paths([])
 
       assert_empty content_aspect.bound_repositories
     end
 
-    def test_save_bound_repos_by_path
+    def test_save_bound_repos_by_paths
       content_aspect.content_view = repo.content_view
       content_aspect.lifecycle_environment = repo.environment
       ForemanTasks.expects(:async_task).with(Actions::Katello::Host::GenerateApplicability, [host])
       content_aspect.expects(:propagate_yum_repos)
       assert_empty content_aspect.bound_repositories
 
-      content_aspect.update_repositories_by_path(["/pulp/repos/#{repo.relative_path}"])
+      content_aspect.update_repositories_by_paths(["/pulp/repos/#{repo.relative_path}"])
 
       assert_equal content_aspect.bound_repositories, [repo]
     end

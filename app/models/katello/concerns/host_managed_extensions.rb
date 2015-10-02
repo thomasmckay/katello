@@ -21,25 +21,6 @@ module Katello
         scoped_search :in => :content_source, :on => :name, :complete_value => true, :rename => :content_source
       end
 
-      module ClassMethods
-        def new_from_rhsm_params(params, org, location)
-          facts = params[:facts]
-          fqdn = facts['network.hostname']
-
-          ::Host::Managed.new(:name => fqdn, :organization => org, :location => location,
-                            :managed => false, :interfaces => new_interfaces(facts))
-        end
-
-        def new_interfaces(facts)
-          mac_keys = facts.keys.select { |f| f =~ /net\.interface\..*\.mac_address/ }
-          interfaces = mac_keys.map { |key| key.sub("net.interface.", '').sub('.mac_address', '') }
-          interfaces.map do |interface|
-            Nic::Interface.new(:mac => facts["net.interface.#{interface}.mac_address"].dup, :identifier => interface.dup,
-                               :ip => facts["net.interface.#{interface}.ipv4_address"].dup)
-          end
-        end
-      end
-
       def validate_media_with_capsule?
         content_source_id.blank? && validate_media_without_capsule?
       end

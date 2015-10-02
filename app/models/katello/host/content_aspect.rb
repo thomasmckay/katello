@@ -15,9 +15,10 @@ module Katello
 
       validates :content_view, :presence => true, :allow_blank => false
       validates :lifecycle_environment, :presence => true, :allow_blank => false
+      validates :host, :presence => true, :allow_blank => false
       validates_with Validators::ContentViewEnvironmentValidator
 
-      def update_repositories_by_path(paths)
+      def update_repositories_by_paths(paths)
         paths = paths.map { |path| path.gsub('/pulp/repos/', '') }
         repos = Repository.where(:relative_path => paths)
 

@@ -1,8 +1,6 @@
 module Katello
   module Candlepin
     class Consumer
-      include LazyAccessor
-
       attr_accessor :uuid
 
       def initialize(uuid)
@@ -10,11 +8,7 @@ module Katello
       end
 
       def regenerate_identity_certificates
-        Rails.logger.debug "Regenerating consumer identity certificates: #{name}"
         Resources::Candlepin::Consumer.regenerate_identity_certificates(self.uuid)
-      rescue => e
-        Rails.logger.debug e.backtrace.join("\n\t")
-        raise e
       end
 
       def backend_data
