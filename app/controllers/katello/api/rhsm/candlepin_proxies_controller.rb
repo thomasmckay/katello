@@ -354,6 +354,7 @@ module Katello
       activation_keys
     end
 
+    # TODO: move to somewhere as a utility
     def find_or_create_host(organization)
       hosts = ::Host.where(:name => params[:facts]['network.hostname'])
       if hosts.empty? #no host exists
