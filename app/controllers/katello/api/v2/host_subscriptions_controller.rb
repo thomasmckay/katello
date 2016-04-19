@@ -9,6 +9,18 @@ module Katello
       api_base_url "/api"
     end
 
+    def_param_group :subscription_facet do
+      #require 'pry' ; binding.pry
+      param :installed_products, Array, :desc => N_("List of products installed on the host") do
+        param :product_id, String, :desc => N_("Product id as listed from a host's installed products, \
+          this is not the same product id as the products api returns")
+        param :product_name, String, :desc => N_("Product name as listed from a host's installed products")
+        param :arch, String, :desc => N_("Product architecture")
+        param :version, String, :desc => N_("Product version")
+      end
+    end
+
+
     api :GET, "/hosts/:host_id/subscriptions", N_("List a host's subscriptions")
     param :host_id, Integer, :desc => N_("Id of the host"), :required => true
     def index

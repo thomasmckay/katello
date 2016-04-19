@@ -39,6 +39,7 @@ module Katello
       SETTINGS[:katello] = default_settings.deep_merge(SETTINGS[:katello] || {})
 
       require_dependency File.expand_path('../../../app/models/setting/katello.rb', __FILE__) if (Setting.table_exists? rescue(false))
+
     end
 
     initializer 'katello.configure_assets', :group => :all do
@@ -85,6 +86,13 @@ module Katello
     initializer "katello.apipie" do
       Apipie.configuration.checksum_path += ['/katello/api/']
       require 'katello/apipie/validators'
+
+      Facets.register(Katello::Host::SubscriptionFacet, :subscription_facet) do
+        #require 'pry' ; binding.pry
+        api_view :list => 'katello/api/v2/subscription_facet/base_with_root', :single => 'katello/api/v2/subscription_facet/show'
+        api_docs(:subscription_facet, ::Katello::Api::V2::HostSubscriptionsController)
+      end
+
     end
 
     initializer "katello.register_actions", :before => 'foreman_tasks.initialize_dynflow' do |_app|
@@ -219,10 +227,6 @@ module Katello
       #facet extensions
       Facets.register(Katello::Host::ContentFacet, :content_facet) do
         api_view :list => 'katello/api/v2/content_facet/base_with_root', :single => 'katello/api/v2/content_facet/show'
-      end
-
-      Facets.register(Katello::Host::SubscriptionFacet, :subscription_facet) do
-        api_view :list => 'katello/api/v2/subscription_facet/base_with_root', :single => 'katello/api/v2/subscription_facet/show'
       end
 
       ::SettingsHelper.send :include, Katello::Concerns::SettingsHelperExtensions
