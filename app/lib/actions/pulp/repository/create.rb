@@ -62,8 +62,8 @@ module Actions
           importer.ssl_validation  = input[:ssl_validation]
           importer.download_policy = input[:download_policy] if input[:content_type] == ::Katello::Repository::YUM_TYPE
           importer.remove_missing  = input[:mirror_on_sync] if input[:content_type] == ::Katello::Repository::YUM_TYPE
-          importer.basic_auth_username = upstream_username.blank? ? '' : upstream_username
-          importer.basic_auth_password = upstream_password.blank? ? '' : upstream_password
+          importer.basic_auth_username = input[:upstream_username].blank? ? '' : input[:upstream_username]
+          importer.basic_auth_password = input[:upstream_password].blank? ? '' : input[:upstream_password]
           importer
         end
 
@@ -74,8 +74,8 @@ module Actions
           importer.ssl_client_cert = input[:ssl_client_cert]
           importer.ssl_client_key  = input[:ssl_client_key]
           importer.ssl_validation  = input[:ssl_validation]
-          importer.basic_auth_username = upstream_username.blank? ? '' : upstream_username
-          importer.basic_auth_password = upstream_password.blank? ? '' : upstream_password
+          importer.basic_auth_username = input[:upstream_username].blank? ? '' : input[:upstream_username]
+          importer.basic_auth_password = input[:upstream_password].blank? ? '' : input[:upstream_password]
           importer
         end
 
@@ -86,8 +86,8 @@ module Actions
           importer.ssl_client_cert = input[:ssl_client_cert]
           importer.ssl_client_key  = input[:ssl_client_key]
           importer.ssl_validation  = input[:ssl_validation]
-          importer.basic_auth_username = upstream_username.blank? ? '' : upstream_username
-          importer.basic_auth_password = upstream_password.blank? ? '' : upstream_password
+          importer.basic_auth_username = input[:upstream_username].blank? ? '' : input[:upstream_username]
+          importer.basic_auth_password = input[:upstream_password].blank? ? '' : input[:upstream_password]
           importer
         end
 
@@ -97,8 +97,8 @@ module Actions
           importer.feed            = input[:feed]
           importer.enable_v1       = false
           importer.ssl_validation  = input[:ssl_validation]
-          importer.basic_auth_username = upstream_username.blank? ? '' : upstream_username
-          importer.basic_auth_password = upstream_password.blank? ? '' : upstream_password
+          importer.basic_auth_username = input[:upstream_username].blank? ? '' : input[:upstream_username]
+          importer.basic_auth_password = input[:upstream_password].blank? ? '' : input[:upstream_password]
           importer
         end
 
