@@ -500,7 +500,7 @@ module Katello
       end
 
       def index_db_docker_manifests
-        docker_manifests_json.each do |manifest_json|
+        docker_manifests_json.collect do |manifest_json|
           manifest = DockerManifest.where(:uuid => manifest_json[:_id]).first_or_create
           manifest.update_from_json(manifest_json)
           create_docker_tag(manifest, manifest_json[:tag])
@@ -510,6 +510,7 @@ module Katello
 
       def docker_manifests_json
         docker_manifests = []
+        DockerTag.where(:repository_id => id).destroy_all
         pulp_docker_manifest_ids.each_slice(SETTINGS[:katello][:pulp][:bulk_load_size]) do |sub_list|
           docker_manifests.concat(Katello.pulp_server.extensions.docker_manifest.find_all_by_unit_ids(sub_list))
         end
@@ -523,6 +524,9 @@ module Katello
         if tag
           DockerTag.where(:repository_id => id, :docker_manifest_id => manifest.id,
                           :name => tag[:metadata][:name], :uuid => tag[:metadata][:_id]).first_or_create
+          [tag]
+        else
+          []
         end
       end
 
