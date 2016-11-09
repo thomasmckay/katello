@@ -8,6 +8,13 @@
     <%= selectable_f(f, :service_level, options_for_select(service_level_options, service_level_selected), {}, :label => _('Default System SLA')) %>
   <% end %>
 
+  <% if ::SETTINGS[:katello][:use_pulp] %>
+    <%= checkbox_f(f, :docker_unrestricted,
+        :label => _('Allow Unrestricted Docker Image Names'),
+        :help_text => _('Docker images in repositories are, by default, strictly named to prevent multiple organizations from conflicting. The names also reflect the product, lifecycle environment, and content view of the image. Enabling this option removes the naming restrictions except uniqueness across all organizations.'))
+    %>
+  <% end %>
+
   <%= field(f, _('Debug Certificate'),
             :help_inline => _('This certificate allows a user to view the repositories in any environment from a browser.')) do
     button_tag _('Generate and Download'), :id => :download_debug_cert_key,

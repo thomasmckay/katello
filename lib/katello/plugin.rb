@@ -165,7 +165,7 @@ Foreman::Plugin.register :katello do
                                        {:installed_products => [:product_id, :product_name, :arch, :version]}, :facts, :hypervisor_guest_uuids => []]
   parameter_filter Hostgroup, :content_view_id, :lifecycle_environment_id, :content_source_id,
     :kickstart_repository_id
-  parameter_filter Organization, :label, :service_level
+  parameter_filter Organization, :label, :service_level, :docker_unrestricted
   parameter_filter SmartProxy, :download_policy, :lifecycle_environment_ids => []
 
   logger :glue, :enabled => true
