@@ -2,7 +2,7 @@ object @organization
 
 extends "api/v2/taxonomies/show"
 
-attributes :task_id, :label, :owner_details, :redhat_repository_url
+attributes :task_id, :label, :owner_details, :redhat_repository_url, :docker_unrestricted
 
 attributes :service_levels, :service_level if ::SETTINGS[:katello][:use_cp]
 

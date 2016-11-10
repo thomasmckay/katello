@@ -5,6 +5,7 @@ extends 'katello/api/v2/common/timestamps'
 
 attributes :content_type
 attributes :docker_upstream_name
+node(:docker_unrestricted) { |m| m.organization.docker_unrestricted }
 attributes :mirror_on_sync, :verify_ssl_on_sync
 attributes :unprotected, :full_path, :checksum_type, :container_repository_name
 attributes :download_policy
