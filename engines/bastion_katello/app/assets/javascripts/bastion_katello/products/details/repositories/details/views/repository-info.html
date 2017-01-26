@@ -28,7 +28,7 @@
       </dd>
 
       <span ng-show="repository.content_type === 'docker'" >
-        <dt translate>Upstream Repository Name</dt>
+        <dt translate>Upstream Image Name</dt>
         <dd bst-edit-text="repository.docker_upstream_name"
             on-save="save(repository)"
             readonly="product.redhat || denied('edit_products', product)">
@@ -79,6 +79,7 @@
             readonly="denied('edit_products', product)">
         </dd>
       </span>
+
       <dt translate>Publish via HTTPS</dt>
       <dd translate>Yes</dd>
 
@@ -86,6 +87,14 @@
         <dt translate>Publish via HTTP</dt>
         <dd bst-edit-checkbox="repository.unprotected"
             formatter="booleanToYesNo"
+            on-save="save(repository)"
+            readonly="product.redhat || denied('edit_products', product)">
+        </dd>
+      </span>
+
+      <span ng-show="repository.content_type === 'docker'" >
+        <dt translate>Downstream Image Name</dt>
+        <dd bst-edit-text="repository.container_repository_name"
             on-save="save(repository)"
             readonly="product.redhat || denied('edit_products', product)">
         </dd>

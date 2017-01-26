@@ -379,7 +379,7 @@ module Katello
 
       def pulp_update_needed?
         changeable_attributes = %w(url unprotected checksum_type docker_upstream_name download_policy mirror_on_sync verify_ssl_on_sync
-                                   upstream_username upstream_password ostree_upstream_sync_policy ostree_upstream_sync_depth)
+                                   upstream_username upstream_password ostree_upstream_sync_policy ostree_upstream_sync_depth container_repository_name)
         changeable_attributes << "name" if docker?
         changeable_attributes.any? { |key| previous_changes.key?(key) }
       end

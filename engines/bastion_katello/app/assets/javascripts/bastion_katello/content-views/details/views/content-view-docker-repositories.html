@@ -4,6 +4,18 @@
   Docker Repository Selection
 </h3>
 
+<div class="row">
+  <div class="col-sm-6">
+    <dl class="dl-horizontal dl-horizontal-left">
+      <dt translate>Image Path Prefix</dt>
+      <dd bst-edit-text="contentView.container_path"
+          on-save="save(contentView)"
+          readonly="denied('edit_content_views', contentView)">
+      </dd>
+    </dl>
+  </div>
+</div>
+
 <nav data-block="navigation">
   <ul class="nav nav-tabs nav-tabs-pf" ng-show="permitted('edit_content_views', contentView)">
     <li ng-class="{active: isState('content-view.repositories.docker.list')}">

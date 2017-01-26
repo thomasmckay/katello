@@ -57,6 +57,12 @@ module Katello
     validate :check_puppet_conflicts
     validates :composite, :inclusion => [true, false]
 
+    validates :container_path, :allow_blank => true, :length => { :maximum => 255 }, :format => {
+      :with => /\A([a-z0-9]+[a-z0-9\-\_\.]*)+(\/[a-z0-9]+[a-z0-9\-\_\.]*)?\z/,
+      :message => _("must be a valid container name format")
+    }
+
+
     validates_with Validators::KatelloNameFormatValidator, :attributes => :name
     validates_with Validators::KatelloLabelFormatValidator, :attributes => :label
 

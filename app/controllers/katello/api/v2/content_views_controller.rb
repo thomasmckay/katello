@@ -54,6 +54,7 @@ module Katello
     param :name, String, :desc => N_("Name of the content view"), :required => true
     param :label, String, :desc => N_("Content view label")
     param :composite, :bool, :desc => N_("Composite content view")
+    param :container_path, String, :desc => N_("Path to prefix container repositories"), :required => false
     param_group :content_view
     def create
       @view = ContentView.create!(view_params) do |view|
@@ -67,6 +68,7 @@ module Katello
     api :PUT, "/content_views/:id", N_("Update a content view")
     param :id, :number, :desc => N_("Content view identifier"), :required => true
     param :name, String, :desc => N_("New name for the content view")
+    param :container_path, String, :desc => N_("Path to prefix container repositories"), :required => false
     param_group :content_view
     def update
       sync_task(::Actions::Katello::ContentView::Update, @view, view_params)
@@ -207,7 +209,7 @@ module Katello
     end
 
     def view_params
-      attrs = [:name, :description, :force_puppet_environment, {:repository_ids => []}, {:component_ids => []}]
+      attrs = [:name, :description, :force_puppet_environment, {:repository_ids => []}, {:component_ids => []}, :container_path]
       attrs.push(:label, :composite) if action_name == "create"
       attrs.push(:component_ids, :repository_ids) # For deep_munge; Remove for Rails 5
       params.require(:content_view).permit(*attrs)

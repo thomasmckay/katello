@@ -79,6 +79,17 @@
 
       </div>
 
+      <div bst-form-group label="{{ 'Downstream Image Name' | translate }}"  ng-show="repository.content_type === 'docker'">
+        <input id="container_repository_name"
+               name="container_repository_name"
+               ng-model="repository.container_repository_name"
+               type="text"
+               ng-required="repository.content_type === 'docker'"/>
+        <h6 translate>
+          Name of the downstream repository you want to serve this image as. Example: 'fedora_ssh' or 'fedora/ssh'.
+        </h6>
+      </div>
+
       <div class="checkbox">
         <label>
           <input id="verify_ssl_on_sync" name="verify_ssl_on_sync" ng-model="repository.verify_ssl_on_sync" type="checkbox"/>

@@ -102,6 +102,7 @@ module Katello
     validates_with Validators::KatelloNameFormatValidator, :attributes => :name
     validates_with Validators::RepositoryUniqueAttributeValidator, :attributes => :label
     validates_with Validators::RepositoryUniqueAttributeValidator, :attributes => :name
+    validates_with Validators::RepositoryUniqueAttributeValidator, :attributes => :container_repository_name, if: :docker?
     validates_with Validators::KatelloUrlFormatValidator,
       :attributes => :url, :nil_allowed => proc { |repo| repo.custom? }, :field_name => :url,
       :if => proc { |repo| repo.in_default_view? }

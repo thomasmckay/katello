@@ -30,6 +30,7 @@ module Katello
       param :content_type, RepositoryTypeManager.creatable_repository_types.keys, :required => true, :desc => N_("type of repo (either 'yum', 'puppet', 'docker', or 'ostree')")
       param :checksum_type, String, :desc => N_("checksum of the repository, currently 'sha1' & 'sha256' are supported.")
       param :docker_upstream_name, String, :desc => N_("name of the upstream docker repository")
+      param :container_repository_name, String, :desc => N_("name to use for this docker repository")
       param :download_policy, ["immediate", "on_demand", "background"], :desc => N_("download policy for yum repos (either 'immediate', 'on_demand', or 'background')")
       param :mirror_on_sync, :bool, :desc => N_("true if this repository when synced has to be mirrored from the source and stale rpms removed.")
       param :verify_ssl_on_sync, :bool, :desc => N_("if true, Katello will verify the upstream url's SSL certifcates are signed by a trusted CA.")
@@ -149,6 +150,7 @@ module Katello
                                      repo_params[:content_type], unprotected,
                                      gpg_key, repository_params[:checksum_type], repo_params[:download_policy])
       repository.docker_upstream_name = repo_params[:docker_upstream_name] if repo_params[:docker_upstream_name]
+      repository.container_repository_name = repo_params[:container_repository_name] if repo_params[:container_repository_name]
       repository.mirror_on_sync = ::Foreman::Cast.to_bool(repo_params[:mirror_on_sync]) if repo_params.key?(:mirror_on_sync)
       repository.verify_ssl_on_sync = ::Foreman::Cast.to_bool(repo_params[:verify_ssl_on_sync]) if repo_params.key?(:verify_ssl_on_sync)
       repository.upstream_username = repo_params[:upstream_username] if repo_params.key?(:upstream_username)
@@ -247,6 +249,7 @@ module Katello
     param :checksum_type, String, :desc => N_("checksum of the repository, currently 'sha1' & 'sha256' are supported.'")
     param :url, String, :desc => N_("the feed url of the original repository ")
     param :docker_upstream_name, String, :desc => N_("name of the upstream docker repository")
+    param :container_repository_name, String, :desc => N_("name to use for this docker repository")
     param :download_policy, ["immediate", "on_demand", "background"], :desc => N_("download policy for yum repos (either 'immediate', 'on_demand', or 'background')")
     param :mirror_on_sync, :bool, :desc => N_("true if this repository when synced has to be mirrored from the source and stale rpms removed.")
     param :verify_ssl_on_sync, :bool, :desc => N_("if true, Katello will verify the upstream url's SSL certifcates are signed by a trusted CA.")
@@ -423,7 +426,7 @@ module Katello
              ]
       keys += [:label, :content_type] if params[:action] == "create"
       if params[:action] == 'create' || @repository.custom?
-        keys += [:url, :gpg_key_id, :unprotected, :name, :checksum_type, :docker_upstream_name]
+        keys += [:url, :gpg_key_id, :unprotected, :name, :checksum_type, :docker_upstream_name, :container_repository_name]
       end
       params.require(:repository).permit(*keys)
     end
