@@ -25,7 +25,7 @@ module Katello
 
       def import_database_attributes(consumer_params)
         update_hypervisor(consumer_params)
-        update_guests
+        update_guests(consumer_params)
 
         self.autoheal = consumer_params['autoheal'] unless consumer_params['autoheal'].blank?
         self.service_level = consumer_params['serviceLevel'] unless consumer_params['serviceLevel'].blank?
@@ -50,9 +50,13 @@ module Katello
         end
       end
 
-      def update_guests
+      def update_guests(consumer_params)
         if self.hypervisor
-          guests = self.candlepin_consumer.virtual_guests
+          if !consumer_params.try(:[], 'guestIds').empty?
+            guests = FactValue.where("value IN (?)", consumer_params['guestIds']).pluck('host_id')
+          else
+            guests = self.candlepin_consumer.virtual_guests
+          end
           subscription_facets = SubscriptionFacet.where(:host => guests)
           subscription_facets.update_all(:hypervisor_host_id => self.host.id)
         elsif (virtual_host = self.candlepin_consumer.virtual_host)
@@ -80,7 +84,7 @@ module Katello
             product
           end
         end
-        attrs
+        HashWithIndifferentAccess.new(attrs)
       end
 
       def candlepin_environment_id

@@ -16,6 +16,7 @@ module Actions
                 host.subscription_facet.update_from_consumer_attributes(consumer_params)
               else
                 consumer_params = host.subscription_facet.consumer_attributes
+                host.subscription_facet.update_from_consumer_attributes(consumer_params)
               end
               host.subscription_facet.save!
               plan_action(::Actions::Candlepin::Consumer::Update, host.subscription_facet.uuid, consumer_params)
