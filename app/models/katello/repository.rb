@@ -166,14 +166,14 @@ module Katello
     def set_container_repository_name
       return if container_repository_name
       if content_view.default?
-        items = [organization.label, product.label, label]
+        items = [organization.label, product.label, name]
       elsif environment
-        items = [organization.label, environment.label, content_view.label, product.label, label]
+        items = [organization.label, environment.label, content_view.label, product.label, name]
       else
-        items = [organization.label, content_view.label, content_view_version.version, product.label, label]
+        items = [organization.label, content_view.label, content_view_version.version, product.label, name]
       end
       # docker repo names need to be in lower case
-      self.container_repository_name = items.compact.join("-").gsub(/[^-\w]/, "_").downcase
+      self.container_repository_name = items.compact.join("/").gsub(/[^-\w]/, "_").downcase
     end
 
     def content_view
