@@ -71,7 +71,10 @@ class Setting::Content < Setting
         self.set('default_location_puppet_content',
                  N_('Default Location where new Puppet content will be put upon Content View publish'),
                  nil, N_('Default Location Puppet content'), nil,
-                 :collection => proc { Hash[Location.unscoped.all.map { |loc| [loc[:title], loc[:title]] }] })
+                 :collection => proc { Hash[Location.unscoped.all.map { |loc| [loc[:title], loc[:title]] }] }),
+        self.set('default_library_image_path',
+                 N_('Default pattern for images synced to Library. May include %organization%, %product% (eg. "%organization/%product%/"). Image repository downstream name will be appended.'),
+                 '%organization%/%product%', N_('Default Library image path'))
       ].each { |s| self.create! s.update(:category => "Setting::Content") }
     end
     true
