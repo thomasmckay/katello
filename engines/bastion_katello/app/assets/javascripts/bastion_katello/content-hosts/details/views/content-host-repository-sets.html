@@ -25,12 +25,8 @@
 
     <div data-block="filters">
       <label class="checkbox-inline" title="{{ 'Show all Repository Sets available to this Host' | translate }}">
-        <input type="checkbox" ng-model="contentAccessModeAll" ng-change="toggleFilters()"/>
+        <input type="checkbox" ng-model="checkboxModel.contentAccessModeAll" ng-change="toggleFilters()"/>
         <span translate>Show All</span>
-      </label>
-      <label class="checkbox-inline" title="{{ 'Show all Repository Sets available to this Host' | translate }}">
-        <input type="checkbox" ng-model="xyz" ng-change="toggleFilters()"/>
-        <span translate>xyz</span>
       </label>
     </div>
 

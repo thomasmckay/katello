@@ -30,17 +30,17 @@ angular.module('Bastion.content-hosts').controller('ContentHostRepositorySetsCon
         $scope.nutupane = new Nutupane(HostSubscription, params, 'repositorySets');
         $scope.table = $scope.nutupane.table;
 
-        $scope.contentAccessModeAll = false;
-        $scope.xyz = false;
+        $scope.checkboxModel = {
+            contentAccessModeAll: false
+        };
+
         $scope.toggleFilters = function () {
             var limit = "subscriptions";
 
-            if ($scope.contentAccessModeAll === true) {
+            if ($scope.checkboxModel.contentAccessModeAll === true) {
                 limit = "all";
             }
-            if ($scope.xyz === true) {
-                limit = "all";
-            }
+
             $scope.nutupane.table.params['limit'] = limit;
             $scope.nutupane.refresh();
         };
