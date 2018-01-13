@@ -1,0 +1,30 @@
+<span page-title ng-model="tag">{{ 'Details for Container Image:' | translate }} {{ tag.name }}</span>
+
+<div data-extend-template="layouts/details-page-with-breadcrumbs.html">
+  <header data-block="header">
+    <h2>{{ tag.name }}</h2>
+  </header>
+
+  <nav data-block="navigation">
+    <ul class="nav nav-tabs details-nav">
+      <li ng-class="{active: isState('container-image.info')}">
+        <a ui-sref="container-image.info">
+          <span translate>
+            Details
+          </span>
+        </a>
+      </li>
+      <li ng-class="{active: stateIncludes('container-image.environments')}">
+        <a ui-sref="container-image.environments">
+          <span translate>
+            Lifecycle Environments
+          </span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div data-block="content">
+    <section ui-view></section>
+  </div>
+</div>

@@ -98,6 +98,15 @@ Foreman::Plugin.register :katello do
          :turbolinks => false
 
     menu :top_menu,
+         :container_images,
+         :caption => N_('Container Images'),
+         :url => '/container_images',
+         :url_hash => {:controller => 'katello/api/v2/container_images',
+                       :action => 'index'},
+         :engine => Katello::Engine,
+         :turbolinks => false
+
+    menu :top_menu,
          :docker_tags,
          :caption => N_('Docker Tags'),
          :url => '/docker_tags',

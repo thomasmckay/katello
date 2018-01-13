@@ -228,6 +228,7 @@ module Katello
                            'katello/api/v2/docker_manifests' => [:index, :show, :auto_complete_search, :compare],
                            'katello/api/v2/docker_manifest_lists' => [:index, :show, :auto_complete_search, :compare],
                            'katello/api/v2/docker_tags' => [:index, :show, :auto_complete_search, :auto_complete_name, :compare],
+                           'katello/api/v2/container_images' => [:index, :show, :auto_complete_search, :auto_complete_name, :compare],
                            'katello/api/v2/file_units' => [:index, :show, :auto_complete_search, :compare],
                            'katello/api/v2/ostree_branches' => [:index, :show, :auto_complete_search, :compare],
                            'katello/api/v2/errata' => [:index, :show, :auto_complete_search, :compare],

@@ -148,6 +148,14 @@ Katello::Engine.routes.draw do
           end
         end
 
+        api_resources :container_images, :only => [:index, :show] do
+          collection do
+            get :auto_complete_search
+            get :auto_complete_name
+            get :compare
+          end
+        end
+
         api_resources :environments, :only => [:index, :show, :create, :update, :destroy] do
           api_resources :activation_keys, :only => [:index, :create]
           api_resources :puppet_modules, :only => [:index]
@@ -329,6 +337,7 @@ Katello::Engine.routes.draw do
           api_resources :docker_manifests, :only => [:index, :show]
           api_resources :docker_manifest_lists, :only => [:index, :show]
           api_resources :docker_tags, :only => [:index, :show]
+          api_resources :container_images, :only => [:index, :show]
           api_resources :debs, :only => [:index, :show]
 
           api_resources :ostree_branches, :only => [:index, :show]

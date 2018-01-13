@@ -1,0 +1,49 @@
+<span page-title>{{ 'Container Images' | translate }}</span>
+
+<div data-extend-template="layouts/table-with-header.html">
+
+  <div data-block="header">
+    <h2 translate>Container Images</h2>
+  </div>
+
+  <span data-block="no-rows-message" translate>
+    You currently don't have any Container Images.
+  </span>
+
+  <span data-block="no-search-results-message" translate>
+    Your search returned zero Container Images.
+  </span>
+
+  <div data-block="table">
+    <table class="table table-striped table-bordered" ng-class="{'table-mask': table.working}">
+      <thead>
+        <tr bst-table-head>
+          <th bst-table-column="name">{{ "Name" | translate }}</th>
+          <th bst-table-column="schema_version">{{ "Available Schema Versions" | translate }}</th>
+          <th bst-table-column="product">{{ "Product Name" | translate }}</th>
+          <th bst-table-column="repository">{{ "Repository Name" | translate }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr bst-table-row ng-repeat="tag in table.rows">
+          <td bst-table-cell>
+            <a ui-sref="container-image.info({tagId: tag.id})">
+              {{ tag.name }}
+            </a>
+          </td>
+          <td bst-table-cell>
+            {{ availableSchemaVersions(tag) }}
+          </td>
+          <td bst-table-cell>
+            {{ tag.product.name }}
+          </td>
+          <td bst-table-cell>
+            {{ tag.repository.name }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>

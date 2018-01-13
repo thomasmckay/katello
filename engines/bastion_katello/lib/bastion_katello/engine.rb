@@ -22,6 +22,7 @@ module BastionKatello
           content_views
           debs
           docker_tags
+          container_images
           files
           ostree_branches
           errata

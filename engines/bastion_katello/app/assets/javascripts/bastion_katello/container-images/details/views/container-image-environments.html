@@ -1,0 +1,48 @@
+
+<div data-extend-template="layouts/partials/table.html">
+  <div data-block="search">
+    <input type="text"
+           class="form-control"
+           placeholder="{{ 'Filter' | translate }}"
+           ng-model="containerImageFilter"/>
+  </div>
+
+  <span data-block="no-rows-message" translate>
+    This Container Image is not present in any Lifecycle Environments.
+  </span>
+
+  <span data-block="no-search-results-message" translate>
+    Your search returned zero Lifecycle Environments.
+  </span>
+
+  <div data-block="table">
+    <table bst-table="table" class="table table-striped table-bordered" ng-class="{'table-mask': table.working}">
+      <thead>
+        <tr bst-table-head>
+          <th bst-table-column="environment" translate>Environment</th>
+          <th bst-table-column="version" translate>Content View Version</th>
+          <th bst-table-column="path" translate>Published At</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr bst-table-row
+            ng-repeat="tag in table.rows | filter:containerImageFilter">
+          <td bst-table-cell>
+            <a ui-sref="environment.details({environmentId: tag.environment.id})">
+              {{ tag.environment.name }}
+            </a>
+          </td>
+          <td bst-table-cell>
+            <a ui-sref="content-view.version.docker({contentViewId: tag.content_view_version.content_view_id, versionId: tag.content_view_version.id})">
+              {{ tag.content_view_version.name }}
+            </a>
+          </td>
+          <td bst-table-cell>
+            {{ tag.repository.full_path }}:{{ tag.name }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

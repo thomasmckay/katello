@@ -3,6 +3,7 @@ BASTION_MODULES.push(
     'Bastion.activation-keys',
     'Bastion.architectures' ,
     'Bastion.common',
+    'Bastion.container-images',
     'Bastion.content-views',
     'Bastion.content-views.versions',
     'Bastion.debs',

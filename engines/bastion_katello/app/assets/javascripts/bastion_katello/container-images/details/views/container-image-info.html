@@ -1,0 +1,52 @@
+<div data-extend-template="layouts/two-column-details.html">
+  <div data-block="left-column">
+    <h4 translate>Basic Information</h4>
+
+    <dl class="dl-horizontal dl-horizontal-left">
+      <dt translate>Product</dt>
+      <dd>
+        <a ui-sref="product.info({productId: tag.product.id})">
+          {{ tag.product.name }}
+        </a>
+      </dd>
+
+      <dt translate>Repository</dt>
+      <dd>
+        <a ui-sref="product.repository.manage-content.docker-manifests({productId: tag.product.id, repositoryId: tag.repository.id})">
+          {{ tag.repository.name }}
+        </a>
+      </dd>
+    </dl>
+  </div>
+
+  <div data-block="right-column">
+    <h4 translate>Docker Manifest</h4>
+    <div ng-if="tag.manifest_schema1">
+      <h5 translate>Schema Version 1</h5>
+      <dl class="dl-horizontal dl-horizontal-left">
+
+        <dt translate>Manifest Type</dt>
+        <dd>
+          {{ tag.manifest_schema1.manifest_type_display }}
+        </dd>
+        <dt translate>Digest</dt>
+        <dd>
+          {{ tag.manifest_schema1.digest }}
+        </dd>
+      </dl>
+    </div>
+    <div ng-if="tag.manifest_schema2">
+      <h5 translate>Schema Version 2</h5>
+      <dl class="dl-horizontal dl-horizontal-left">
+        <dt translate>Manifest Type</dt>
+        <dd>
+          {{ tag.manifest_schema2.manifest_type_display }}
+        </dd>
+        <dt translate>Digest</dt>
+        <dd>
+          {{ tag.manifest_schema2.digest }}
+        </dd>
+      </dl>
+    </div>
+  </div>
+ </div>

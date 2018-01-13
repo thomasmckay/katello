@@ -1,6 +1,6 @@
 module Katello
-  class Api::V2::DockerTagsController < Api::V2::ApiController
-    apipie_concern_subst(:a_resource => N_("a docker tag"), :resource => "docker_tags")
+  class Api::V2::ContainerImagesController < Api::V2::ApiController
+    apipie_concern_subst(:a_resource => N_("a container image"), :resource => "container_images")
     include Katello::Concerns::Api::V2::RepositoryContentController
 
     before_action :find_repositories, :only => [:auto_complete_name]

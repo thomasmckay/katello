@@ -14,6 +14,8 @@ module Katello
                   :only_explicit => true, :ext_method => :find_by_schema_version, :operators => ["="]
     scoped_search :relation => :repository, :on => :name, :rename => :repository,
       :complete_value => true, :only_explicit => true
+    scoped_search :relation => :repository, :on => :container_repository_name, :rename => :image,
+                  :complete_value => true, :only_explicit => true
 
     def self.find_by_schema_version(_key, operator, value)
       conditions = ""
