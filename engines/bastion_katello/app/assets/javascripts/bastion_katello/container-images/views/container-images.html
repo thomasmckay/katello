@@ -19,9 +19,9 @@
       <thead>
         <tr bst-table-head>
           <th bst-table-column="name">{{ "Name" | translate }}</th>
-          <th bst-table-column="schema_version">{{ "Available Schema Versions" | translate }}</th>
-          <th bst-table-column="product">{{ "Product Name" | translate }}</th>
-          <th bst-table-column="repository">{{ "Repository Name" | translate }}</th>
+          <th bst-table-column="name">{{ "Environment" | translate }}</th>
+          <th bst-table-column="name">{{ "Content View Version" | translate }}</th>
+          <th bst-table-column="name">{{ "Image Path" | translate }}</th>
         </tr>
       </thead>
 
@@ -33,13 +33,13 @@
             </a>
           </td>
           <td bst-table-cell>
-            {{ availableSchemaVersions(tag) }}
+            {{ tag.environment.name }}
           </td>
           <td bst-table-cell>
-            {{ tag.product.name }}
+            {{ tag.content_view_version.name }}
           </td>
           <td bst-table-cell>
-            {{ tag.repository.name }}
+            {{ tag.repository.full_path }}
           </td>
         </tr>
       </tbody>

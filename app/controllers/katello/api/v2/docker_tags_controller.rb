@@ -18,7 +18,7 @@ module Katello
         # group docker tags by name, repo, and product
         repos = Repository.readable
         repos = repos.in_organization(@organization) if @organization
-        collection = Katello::DockerMetaTag.in_repositories(repos, false)
+        collection = Katello::DockerMetaTag.in_repositories(repos, true)
         respond(:collection => scoped_search(collection, "name", "DESC"))
       else
         super
