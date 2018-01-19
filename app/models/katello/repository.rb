@@ -126,7 +126,7 @@ module Katello
     }, if: :yum?
     validate :ensure_no_download_policy, if: ->(repo) { !repo.yum? }
     validate :ensure_no_ostree_upstream_sync_policy, if: ->(repo) { !repo.ostree? }
-    validate :ensure_valid_docker_attributes, :if => :docker?
+    #validate :ensure_valid_docker_attributes, :if => :docker?
     validate :ensure_docker_repo_unprotected, :if => :docker?
     validate :ensure_has_url_for_ostree, :if => :ostree?
     validate :ensure_ostree_repo_protected, :if => :ostree?
