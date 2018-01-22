@@ -25,6 +25,11 @@ module Katello
       end
     end
 
+    api :POST, "/docker_tags", N_("Create a docker tag")
+    def create
+      sync_task(::Action::Katello::DockerMetaTag::Create, repository)
+    end
+
     private
 
     def find_repositories
