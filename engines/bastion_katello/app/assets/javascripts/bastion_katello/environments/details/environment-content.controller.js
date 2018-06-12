@@ -64,7 +64,7 @@
             return versionId;
         }
 
-        nutupaneParams = {'environment_id': $scope.$stateParams.environmentId/*, library: true*/};
+        nutupaneParams = {'environment_id': $scope.$stateParams.environmentId 'content_type': ContentService.getContentType()};
         if ($location.search().repositoryId) {
             nutupaneParams['repository_id'] = $location.search().repositoryId;
         }

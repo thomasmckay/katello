@@ -65,25 +65,80 @@ module Katello
       param :available_for, :string, :desc => N_("Return content that can be added to the specified object.  The values 'content_view_version' and 'content_view_filter are supported.")
       param :filterId, :integer, :desc => N_("Content View Filter id")
       def index_relation
-        if @version && params[:available_for] == "content_view_version" && self.respond_to?(:available_for_content_view_version)
-          collection = self.available_for_content_view_version(@version)
-        else
-          collection = resource_class.all
-          collection = filter_by_content_view_version(@version, collection) if @version
-        end
+        # if @version && params[:available_for] == "content_view_version" && self.respond_to?(:available_for_content_view_version)
+        #   collection = self.available_for_content_view_version(@version)
+        # else
+        #   collection = resource_class.all
+        #   collection = filter_by_content_view_version(@version, collection) if @version
+        # end
 
-        collection = filter_by_repos(repos, collection)
-        collection = filter_by_ids(params[:ids], collection) if params[:ids]
-        @filter = ContentViewFilter.find(params[:filterId]) if params[:filterId]
-        if params[:available_for] == "content_view_filter" && self.respond_to?(:available_for_content_view_filter)
-          collection = self.available_for_content_view_filter(@filter, collection) if @filter
-        else
-          collection = filter_by_content_view_filter(@filter, collection) if @filter
-        end
+        # collection = filter_by_repos(repos, collection)
+        # collection = filter_by_ids(params[:ids], collection) if params[:ids]
+        # @filter = ContentViewFilter.find(params[:filterId]) if params[:filterId]
+        # if params[:available_for] == "content_view_filter" && self.respond_to?(:available_for_content_view_filter)
+        #   collection = self.available_for_content_view_filter(@filter, collection) if @filter
+        # else
+        #   collection = filter_by_content_view_filter(@filter, collection) if @filter
+        # end
+        # collection = self.custom_index_relation(collection) if self.respond_to?(:custom_index_relation)
+        # collection
+        
+
+        repositories = index_relation_repositories.distinct
+        collection = resource_class.in_repositories(repositories)
         collection = self.custom_index_relation(collection) if self.respond_to?(:custom_index_relation)
         collection
       end
 
+                          
+      def index_relation_repositories
+        query = Repository.readable
+        query = index_relation_product(query)
+        query = query.where(:content_type => params[:content_type]) if params[:content_type]
+        query = query.where(:id => @repo) if @repo
+
+        query = index_relation_content_view(query)
+        query = index_relation_environment(query)
+
+        query
+      end
+
+      def index_relation_product(query)
+        query = query.joins(:product).where("#{Product.table_name}.organization_id" => @organization) if @organization
+        query = query.where(:product_id => @product.id) if @product
+        query
+      end
+
+      def index_relation_content_view(query)
+        if params[:content_view_version_id]
+          query = query.where(:content_view_version_id => params[:content_view_version_id])
+          query = query.archived unless params[:library] || params[:environment_id] #???? https://github.com/Katello/katello/pull/6366
+          query = Repository.where(:id => query.map(&:library_instance_id)) if params[:library]
+        elsif params[:content_view_id]
+          query = filter_by_content_view(query, params[:content_view_id], params[:environment_id], params[:available_for] == 'content_view')
+        end
+        query
+      end
+
+      def index_relation_environment(query)
+        if params[:environment_id] && !params[:library]
+          query = query.where(:environment_id => params[:environment_id])
+        elsif params[:environment_id] && params[:library]
+          instances = query.where(:environment_id => params[:environment_id])
+          instance_ids = instances.pluck(:library_instance_id).reject(&:blank?)
+          instance_ids += instances.where(:library_instance_id => nil)
+          query = Repository.where(:id => instance_ids)
+        elsif (params[:library] && !params[:environment_id]) || (params[:environment_id].blank? && params[:content_view_version_id].blank? && params[:content_view_id].blank?)
+
+          if @organization
+            query = query.where(:content_view_version_id => @organization.default_content_view.versions.first.id)
+          else
+            query = query.in_default_view
+          end
+        end
+        query
+      end
+                          
       private
 
       def default_sort
@@ -111,7 +166,7 @@ module Katello
         if @repo
           repos = repos.where(:id => @repo)
         else
-          repos = repos.where(:id => @version.repositories.archived) if @version
+          repos = repos.where(:id => @version.repositories) if @version
           if @environment && (@environment.library? || resource_class != Katello::PuppetModule)
             # if the environment is not library and this is for puppet modules,
             # we can skip environment filter, as those would be associated to
