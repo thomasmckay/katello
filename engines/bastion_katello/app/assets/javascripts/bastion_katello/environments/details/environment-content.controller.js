@@ -46,15 +46,35 @@
                 }
 
                 $scope.repository = repository || allRepositories;
+
+                if ($location.search().contentViewId) {
+                    $scope.contentView = getContentView($location.search().contentViewId);
+                }
             });
 
             return promise;
         }
 
+        function getContentView(contentViewId) {
+            var contentView
+
+            if (contentViewId !== 'all') {
+                contentView = _.find($scope.contentViews, function (cv) {
+                    return cv.id.toString() === contentViewId.toString();
+                });
+            }
+
+            if (contentView === null) {
+                contentView = {id: 'all', name: translate('All Content Views')};
+            }
+
+            return contentView;
+        }
+
         function getVersionId(contentView, environmentId) {
             var versionId, version;
 
-            if (contentView.id !== 'all') {
+            if (contentView && contentView.id !== 'all') {
                 version = _.find(contentView.versions, function (vers) {
                     return vers['environment_ids'].indexOf(parseInt(environmentId, 10)) > -1;
                 });
@@ -64,9 +84,11 @@
             return versionId;
         }
 
+        fetchContentViews($scope.$stateParams.environmentId);
+
         nutupaneParams = {'environment_id': $scope.$stateParams.environmentId, 'content_type': ContentService.getRepositoryType()};
-        if ($location.search().contentViewVersionId) {
-            nutupaneParams['content_view_version_id'] = $location.search().contentViewVersionId;
+        if ($location.search().contentViewId) {
+            nutupaneParams['content_view_version_id'] = getVersionId(getContentView($location.search().contentViewId), $scope.$stateParams.environmentId);
         }
         if ($location.search().repositoryId) {
             nutupaneParams['repository_id'] = $location.search().repositoryId;
@@ -83,7 +105,6 @@
         allRepositories = {id: 'all', name: translate('All Repositories')};
         $scope.repository = allRepositories;
 
-        fetchContentViews($scope.$stateParams.environmentId);
 
         if (ContentService.getRepositoryType()) {
             fetchRepositories();
@@ -97,7 +118,7 @@
 
                 params['content_view_version_id'] = getVersionId(contentView, $scope.$stateParams.environmentId);
                 params['available_for'] = 'content_view_version';
-                $location.search('contentViewVersionId', params['content_view_version_id']);
+                $location.search('contentViewId', contentView.id);
 
                 if (params['repository_id']) {
                     repo = _.find(response.results, function (repository) {
