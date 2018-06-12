@@ -26,6 +26,9 @@
             if (contentView && contentView.id !== 'all') {
                 params['content_view_id'] = contentView.id;
                 params['available_for'] = 'content_view_version';
+                $location.search('contentViewId', contentView.id);
+            } else {
+                $location.search('contentViewId', null);
             }
 
             promise = Repository.queryUnpaged(params).$promise;
@@ -64,7 +67,7 @@
             return versionId;
         }
 
-        nutupaneParams = {'environment_id': $scope.$stateParams.environmentId 'content_type': ContentService.getContentType()};
+        nutupaneParams = {'environment_id': $scope.$stateParams.environmentId, 'content_type': ContentService.getRepositoryType()};
         if ($location.search().repositoryId) {
             nutupaneParams['repository_id'] = $location.search().repositoryId;
         }
