@@ -25,6 +25,10 @@ module Katello
       end
     end
 
+    def available_for_content_view_version(version)
+      version.available_docker_tags
+    end
+
     private
 
     def find_repositories

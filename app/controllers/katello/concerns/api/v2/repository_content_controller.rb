@@ -107,14 +107,18 @@ module Katello
 
       def repos
         repos = Repository.readable
-        repos = repos.where(:id => @repo) if @repo
         repos = repos.where(:id => Repository.readable.in_organization(@organization)) if @organization
-        if @environment && (@environment.library? || resource_class != Katello::PuppetModule)
-          # if the environment is not library and this is for puppet modules,
-          # we can skip environment filter, as those would be associated to
-          # content view puppet environments and handled by the puppet modules
-          # controller.
-          repos = repos.where(:id => @environment.repositories)
+        if @repo
+          repos = repos.where(:id => @repo)
+        else
+          repos = repos.where(:id => @version.repositories.archived) if @version
+          if @environment && (@environment.library? || resource_class != Katello::PuppetModule)
+            # if the environment is not library and this is for puppet modules,
+            # we can skip environment filter, as those would be associated to
+            # content view puppet environments and handled by the puppet modules
+            # controller.
+            repos = repos.where(:id => @environment.repositories)
+          end
         end
         repos
       end

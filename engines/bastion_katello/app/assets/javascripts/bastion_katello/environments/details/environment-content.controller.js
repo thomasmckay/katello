@@ -25,6 +25,7 @@
 
             if (contentView && contentView.id !== 'all') {
                 params['content_view_id'] = contentView.id;
+                params['available_for'] = 'content_view_version';
             }
 
             promise = Repository.queryUnpaged(params).$promise;
@@ -63,7 +64,7 @@
             return versionId;
         }
 
-        nutupaneParams = {'environment_id': $scope.$stateParams.environmentId, library: true};
+        nutupaneParams = {'environment_id': $scope.$stateParams.environmentId/*, library: true*/};
         if ($location.search().repositoryId) {
             nutupaneParams['repository_id'] = $location.search().repositoryId;
         }
@@ -92,6 +93,7 @@
                 var repo;
 
                 params['content_view_version_id'] = getVersionId(contentView, $scope.$stateParams.environmentId);
+                params['available_for'] = 'content_view_version';
 
                 if (params['repository_id']) {
                     repo = _.find(response.results, function (repository) {
