@@ -72,7 +72,7 @@ module Katello
           collection = filter_by_content_view_version(@version, collection) if @version
         end
 
-        collection = filter_by_repos(repos, collection)
+        collection = filter_by_repos(relevant_repositories, collection)
         collection = filter_by_ids(params[:ids], collection) if params[:ids]
         @filter = ContentViewFilter.find(params[:filterId]) if params[:filterId]
         if params[:available_for] == "content_view_filter" && self.respond_to?(:available_for_content_view_filter)
@@ -105,18 +105,52 @@ module Katello
         filter_by_ids(ids, collection)
       end
 
-      def repos
-        repos = Repository.readable
-        repos = repos.where(:id => @repo) if @repo
-        repos = repos.where(:id => Repository.readable.in_organization(@organization)) if @organization
-        if @environment && (@environment.library? || resource_class != Katello::PuppetModule)
-          # if the environment is not library and this is for puppet modules,
-          # we can skip environment filter, as those would be associated to
-          # content view puppet environments and handled by the puppet modules
-          # controller.
-          repos = repos.where(:id => @environment.repositories)
+      def relevant_repositories
+        query = Repository.readable
+        query = index_relation_product(query)
+        query = query.where(:content_type => params[:content_type]) if params[:content_type]
+        query = query.where(:id => @repo) if @repo
+
+        query = index_relation_content_view(query)
+        query = index_relation_environment(query)
+
+        query.distinct
+      end
+
+      def index_relation_product(query)
+        query = query.joins(:product).where("#{Product.table_name}.organization_id" => @organization) if @organization
+        query = query.where(:product_id => @product.id) if @product
+        query
+      end
+
+      def index_relation_content_view(query)
+        if params[:content_view_version_id]
+          query = query.where(:content_view_version_id => params[:content_view_version_id])
+          query = query.archived unless params[:library] || params[:environment_id]
+          query = Repository.where(:id => query.map(&:library_instance_id)) if params[:library]
+        elsif params[:content_view_id]
+          query = filter_by_content_view(query, params[:content_view_id], params[:environment_id], params[:available_for] == 'content_view')
         end
-        repos
+        query
+      end
+
+      def index_relation_environment(query)
+        if params[:environment_id] && !params[:library]
+          query = query.where(:environment_id => params[:environment_id])
+        elsif params[:environment_id] && params[:library]
+          instances = query.where(:environment_id => params[:environment_id])
+          instance_ids = instances.pluck(:library_instance_id).reject(&:blank?)
+          instance_ids += instances.where(:library_instance_id => nil)
+          query = Repository.where(:id => instance_ids)
+        elsif (params[:library] && !params[:environment_id]) || (params[:environment_id].blank? && params[:content_view_version_id].blank? && params[:content_view_id].blank?)
+
+          if @organization
+            query = query.where(:content_view_version_id => @organization.default_content_view.versions.first.id)
+          else
+            query = query.in_default_view
+          end
+        end
+        query
       end
 
       def filter_by_repos(repos, collection)

@@ -281,6 +281,10 @@ module Katello
       end
     end
 
+    def docker_tags
+      ::Katello::DockerMetaTag.where(:repository_id => repositories.docker_type)
+    end
+
     def docker_tag_count
       ::Katello::DockerMetaTag.where(:repository_id => repositories.archived.docker_type).count
     end
