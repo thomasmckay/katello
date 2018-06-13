@@ -15,7 +15,7 @@
       </li>
       <li>
         <p translate>Install the pre-built bootstrap RPM:</p>
-        <pre><code>rpm -Uvh https://{{ noCapsulesFound ? katelloHostname : hostname(selectedCapsule.url) }}/pub/{{ consumerCertRPM }}</code></pre>
+        <pre><code>rpm -Uvh http://{{ noCapsulesFound ? katelloHostname : hostname(selectedCapsule.url) }}/pub/{{ consumerCertRPM }}</code></pre>
       </li>
       <li>
         <p translate>Register using subscription-manager:</p>
