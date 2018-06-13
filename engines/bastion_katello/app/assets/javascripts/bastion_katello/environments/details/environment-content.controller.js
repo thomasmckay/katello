@@ -23,6 +23,10 @@
                 'content_type': ContentService.getRepositoryType()
             };
 
+            if (!contentView && $location.search().contentViewVersionId) {
+                contentView = getContentView($location.search().contentViewVersionId);
+            }
+
             if (contentView && contentView.id !== 'all') {
                 params['content_view_id'] = contentView.id;
                 params['available_for'] = 'content_view_version';
