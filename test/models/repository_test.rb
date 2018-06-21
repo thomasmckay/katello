@@ -8,7 +8,7 @@ module Katello
       @repo = build(:katello_repository, :fedora_17_el6,
                     :environment => @library,
                     :product => katello_products(:fedora),
-		    :description => "My description",
+		    :description => 'My description',
                     :content_view_version => @library.default_content_view_version
                    )
     end
@@ -485,6 +485,13 @@ module Katello
   end
 
   class RepositorySearchTest < RepositoryTestBase
+    def build_description_test_repo
+      @repo3 = build(:katello_repository, :fedora_17_x86_64,
+		    :description => 'My description'
+                    )
+      refute @repo3.valid?
+    end
+
     def test_search_content_type
       repos = Repository.search_for("content_type = yum")
       assert_includes repos, @fedora_17_x86_64
@@ -508,8 +515,10 @@ module Katello
     end
 
     def test_search_description
-      repos = Repository.search_for("description = \"#{@fedora_17_x86_64.description}\"")
-      assert_includes repos, @fedora_17_x86_64
+      #@repo3.save
+      repos = Repository.search_for("description = \"#{@repo3.description}\"")
+      require 'pry'; binding.pry
+      assert_includes repos, @repo3
     end
 
     def test_search_distribution_version
