@@ -8,7 +8,6 @@ module Katello
       @repo = build(:katello_repository, :fedora_17_el6,
                     :environment => @library,
                     :product => katello_products(:fedora),
-		    :description => 'My description',
                     :content_view_version => @library.default_content_view_version
                    )
     end
@@ -485,11 +484,16 @@ module Katello
   end
 
   class RepositorySearchTest < RepositoryTestBase
-    def build_description_test_repo
-      @repo3 = build(:katello_repository, :fedora_17_x86_64,
-		    :description => 'My description'
-                    )
-      refute @repo3.valid?
+    def setup
+      super
+      User.current = @admin
+      @repo = build(:katello_repository, :fedora_17_el6,
+                    :environment => @library,
+                    :product => katello_products(:fedora),
+		    :description => 'My description',
+                    :content_view_version => @library.default_content_view_version
+                   )
+      assert @repo.valid?
     end
 
     def test_search_content_type
@@ -515,10 +519,9 @@ module Katello
     end
 
     def test_search_description
-      #@repo3.save
-      repos = Repository.search_for("description = \"#{@repo3.description}\"")
-      require 'pry'; binding.pry
-      assert_includes repos, @repo3
+      @repo.save
+      repos = Repository.search_for("description = \"#{@repo.description}\"")
+      assert_includes repos, @repo
     end
 
     def test_search_distribution_version
