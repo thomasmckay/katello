@@ -6,6 +6,7 @@ module Katello
     CONTENT_CREDENTIAL_SSL_CA_CERT_TYPE = "ssl_ca_cert".freeze
     CONTENT_CREDENTIAL_SSL_CLIENT_CERT_TYPE = "ssl_client_cert".freeze
     CONTENT_CREDENTIAL_SSL_CLIENT_KEY_TYPE = "ssl_client_key".freeze
+    CONTENT_CREDENTIAL_SIGSTORE_TYPE = "sigstore".freeze
 
     before_action :find_optional_organization, :only => [:index, :auto_complete_search]
     before_action :find_product, :only => [:index, :auto_complete_search]
@@ -20,6 +21,7 @@ module Katello
     before_action :only => [:create, :update] { find_content_credential CONTENT_CREDENTIAL_SSL_CA_CERT_TYPE }
     before_action :only => [:create, :update] { find_content_credential CONTENT_CREDENTIAL_SSL_CLIENT_CERT_TYPE }
     before_action :only => [:create, :update] { find_content_credential CONTENT_CREDENTIAL_SSL_CLIENT_KEY_TYPE }
+    before_action :only => [:create, :update] { find_content_credential CONTENT_CREDENTIAL_SIGSTORE_TYPE }
     before_action :error_on_rh_product, :only => [:create]
     before_action :error_on_rh_repo, :only => [:destroy]
 
@@ -32,6 +34,7 @@ module Katello
       param :ssl_ca_cert_id, :number, :desc => N_("Idenifier of the SSL CA Cert")
       param :ssl_client_cert_id, :number, :desc => N_("Identifier of the SSL Client Cert")
       param :ssl_client_key_id, :number, :desc => N_("Identifier of the SSL Client Key")
+      param :sigstore_id, :number, :desc => N_("Identifier of the Container Image Sigstore")
       param :unprotected, :bool, :desc => N_("true if this repository can be published via HTTP")
       param :checksum_type, String, :desc => N_("checksum of the repository, currently 'sha1' & 'sha256' are supported.")
       param :docker_upstream_name, String, :desc => N_("name of the upstream docker repository")
@@ -185,6 +188,7 @@ module Katello
       ssl_ca_cert = get_content_credential(repo_params, CONTENT_CREDENTIAL_SSL_CA_CERT_TYPE)
       ssl_client_cert = get_content_credential(repo_params, CONTENT_CREDENTIAL_SSL_CLIENT_CERT_TYPE)
       ssl_client_key = get_content_credential(repo_params, CONTENT_CREDENTIAL_SSL_CLIENT_KEY_TYPE)
+      sigstore = get_content_credential(repo_params, CONTENT_CREDENTIAL_SIGSTORE_TYPE)
 
       repo_params[:label] = labelize_params(repo_params)
       repo_params[:arch] = repo_params[:arch] || 'noarch'
@@ -194,6 +198,7 @@ module Katello
       repo_params[:ssl_ca_cert] = ssl_ca_cert
       repo_params[:ssl_client_cert] = ssl_client_cert
       repo_params[:ssl_client_key] = ssl_client_key
+      repo_params[:sigstore] = sigstore
 
       repository = construct_repo_from_params(repo_params)
       sync_task(::Actions::Katello::Repository::Create, repository, false, true)
@@ -458,14 +463,14 @@ module Katello
     end
 
     def repository_params
-      keys = [:download_policy, :mirror_on_sync, :arch, :verify_ssl_on_sync, :upstream_password, :upstream_username,
+      keys = [:download_policy, :mirror_on_sync, :arch, :verify_ssl_on_sync, :verify_sigstore_on_sync, :upstream_password, :upstream_username,
               :ostree_upstream_sync_depth, :ostree_upstream_sync_policy, :ignore_global_proxy,
               :deb_releases, :deb_components, :deb_architectures, {:ignorable_content => []}
              ]
 
       keys += [:label, :content_type] if params[:action] == "create"
       if params[:action] == 'create' || @repository.custom?
-        keys += [:url, :gpg_key_id, :ssl_ca_cert_id, :ssl_client_cert_id, :ssl_client_key_id, :unprotected, :name, :checksum_type, :docker_upstream_name]
+        keys += [:url, :gpg_key_id, :ssl_ca_cert_id, :ssl_client_cert_id, :ssl_client_key_id, :sigstore, :unprotected, :name, :checksum_type, :docker_upstream_name]
       end
       params.require(:repository).permit(*keys).to_h
     end
@@ -482,12 +487,13 @@ module Katello
 
     def construct_repo_from_params(repo_params)
       repository = @product.add_repo(Hash[repo_params.slice(:label, :name, :url, :content_type, :arch, :unprotected,
-                                                            :gpg_key, :ssl_ca_cert, :ssl_client_cert, :ssl_client_key,
+                                                            :gpg_key, :ssl_ca_cert, :ssl_client_cert, :ssl_client_key, :sigstore,
                                                             :checksum_type, :download_policy).to_h.map { |k, v| [k.to_sym, v] }])
       repository.docker_upstream_name = repo_params[:docker_upstream_name] if repo_params[:docker_upstream_name]
       repository.mirror_on_sync = ::Foreman::Cast.to_bool(repo_params[:mirror_on_sync]) if repo_params.key?(:mirror_on_sync)
       repository.ignore_global_proxy = ::Foreman::Cast.to_bool(repo_params[:ignore_global_proxy]) if repo_params.key?(:ignore_global_proxy)
       repository.verify_ssl_on_sync = ::Foreman::Cast.to_bool(repo_params[:verify_ssl_on_sync]) if repo_params.key?(:verify_ssl_on_sync)
+      repository.verify_sigstore_on_sync = ::Foreman::Cast.to_bool(repo_params[:verify_sigstore_on_sync]) if repo_params.key?(:verify_sigstore_on_sync)
       repository.upstream_username = repo_params[:upstream_username] if repo_params.key?(:upstream_username)
       repository.upstream_password = repo_params[:upstream_password] if repo_params.key?(:upstream_password)
       repository.ignorable_content = repo_params[:ignorable_content] if repository.yum? && repo_params.key?(:ignorable_content)

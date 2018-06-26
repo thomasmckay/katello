@@ -18,6 +18,8 @@ angular.module('Bastion.content-credentials').filter('contentTypeFilter',
                 filtered = translate("Certificate");
             } else if (contentType === "gpg_key") {
                 filtered = translate("GPG Key");
+            } else if (contentType === "sigstore") {
+                filtered = translate("Container Image Sigstore");
             }
             return filtered;
         };

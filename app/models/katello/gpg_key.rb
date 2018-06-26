@@ -7,6 +7,7 @@ module Katello
 
     GPG_KEY_TYPE = 'gpg_key'.freeze
     CERT_TYPE = 'cert'.freeze
+    SIGSTORE_TYPE = 'sigstore'.freeze
 
     has_many :repositories, :class_name => "Katello::Repository", :inverse_of => :gpg_key, :dependent => :nullify
     has_many :products, :class_name => "Katello::Product", :inverse_of => :gpg_key, :dependent => :nullify
@@ -16,19 +17,23 @@ module Katello
                                    :inverse_of => :ssl_client_cert, :dependent => :nullify
     has_many :ssl_key_products, :class_name => "Katello::Product", :foreign_key => "ssl_client_key_id",
                                 :inverse_of => :ssl_client_key, :dependent => :nullify
+    has_many :sigstore_products, :class_name => "Katello::Product", :foreign_key => "sigstore_id",
+                                :inverse_of => :sigstore, :dependent => :nullify
     has_many :ssl_ca_repos, :class_name => "Katello::Repository", :foreign_key => "ssl_ca_cert_id",
                             :inverse_of => :ssl_ca_cert, :dependent => :nullify
     has_many :ssl_client_repos, :class_name => "Katello::Repository", :foreign_key => "ssl_client_cert_id",
                                 :inverse_of => :ssl_client_cert, :dependent => :nullify
     has_many :ssl_key_repos, :class_name => "Katello::Repository", :foreign_key => "ssl_client_key_id",
                              :inverse_of => :ssl_client_key, :dependent => :nullify
+    has_many :sigstore_repos, :class_name => "Katello::Repository", :foreign_key => "sigstore_id",
+                             :inverse_of => :sigstore, :dependent => :nullify
     belongs_to :organization, :inverse_of => :gpg_keys
 
     validates_lengths_from_database
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id,
                                                         :message => N_("has already been taken")}
-    validates :content_type, :presence => true, :inclusion => { :in => [GPG_KEY_TYPE, CERT_TYPE],
-                                                                :message => N_("must be %{gpg_key} or %{cert}") % { :gpg_key => GPG_KEY_TYPE, :cert => CERT_TYPE} }
+    validates :content_type, :presence => true, :inclusion => { :in => [GPG_KEY_TYPE, CERT_TYPE, SIGSTORE_TYPE],
+                                                                :message => N_("must be %{gpg_key}, %{cert}, or %{sigstore}") % { :gpg_key => GPG_KEY_TYPE, :cert => CERT_TYPE, :sigstore => SIGSTORE_TYPE} }
     validates :content, :presence => true
     validates :organization, :presence => true
     validates_with Validators::KatelloNameFormatValidator, :attributes => :name

@@ -38,6 +38,7 @@ angular.module('Bastion.content-credentials').factory('ContentCredential',
                         collectProducts(allProducts, contentCredential.ssl_ca_products, "SSL CA Cert");
                         collectProducts(allProducts, contentCredential.ssl_client_products, "SSL Client Cert");
                         collectProducts(allProducts, contentCredential.ssl_key_products, "SSL Client Key");
+                        collectProducts(allProducts, contentCredential.sigstore_products, "Container Image Sigstore");
 
                         return {
                             total: allProducts.length,
@@ -68,6 +69,7 @@ angular.module('Bastion.content-credentials').factory('ContentCredential',
                         collectRepos(allRepos, contentCredential.ssl_ca_repos, "SSL CA Cert");
                         collectRepos(allRepos, contentCredential.ssl_client_repos, "SSL Client Cert");
                         collectRepos(allRepos, contentCredential.ssl_key_repos, "SSL Client Key");
+                        collectRepos(allRepos, contentCredential.sigstore_repos, "Sigstore");
 
                         return {
                             total: allRepos.length,
