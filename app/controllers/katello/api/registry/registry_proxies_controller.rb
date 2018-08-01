@@ -168,7 +168,7 @@ module Katello
         r = Resources::Registry::Proxy.get(@_request.fullpath, 'Accept' => request.headers['Accept'])
         response.header['Content-Length'] = "#{r.body.size}"
       rescue RestClient::NotFound
-        digest_file = tmp_file("#{params[:digest][7..-1]}.tar")
+        digest_file = tmp_file("#{params[:digest][7..-1]}")
         raise unless File.exist? digest_file
         response.header['Content-Length'] = "#{File.size digest_file}"
       end
@@ -215,6 +215,8 @@ module Katello
       response.header['Location'] = "#{request_url}/v2/#{params[:repository]}/blobs/uploads/#{uuid}"
       response.header['Docker-Upload-UUID'] = uuid
       response.header['Range'] = '0-0'
+      #render plain: '', status: 202
+      #render plain: '', status: 200
       head 202
     end
 
@@ -231,7 +233,7 @@ module Katello
     end
 
     def upload_blob
-      File.open(tmp_file("#{params[:uuid]}.tar"), 'ab', 0600) do |file|
+      File.open(tmp_file("#{params[:uuid]}"), 'ab', 0600) do |file|
         file.write request.body.read
       end
 
@@ -249,8 +251,8 @@ module Katello
     def finish_upload_blob
       # error by client if no params[:digest]
 
-      uuid_file = tmp_file("#{params[:uuid]}.tar")
-      digest_file = tmp_file("#{params[:digest][7..-1]}.tar")
+      uuid_file = tmp_file("#{params[:uuid]}")
+      digest_file = tmp_file("#{params[:digest][7..-1]}")
 
       File.delete(digest_file) if File.exist? digest_file
       File.rename(uuid_file, digest_file)
@@ -323,8 +325,11 @@ module Katello
         return nil
       end
       manifest = request.body.read
-      File.open(tmp_file('manifest.json'), 'wb', 0600) do |file|
+      File.open(filename, 'wb', 0600) do |file|
         file.write manifest
+      end
+      File.open(tmp_file('version'), 'wb', 0600) do |file|
+        file.write "Directory Transport Versoin: 1.1"
       end
       manifest = JSON.parse(manifest)
     rescue
@@ -332,11 +337,11 @@ module Katello
     end
 
     def get_manifest_files(repository, manifest)
-      files = ['manifest.json']
+      files = ['manifest.json', 'version']
       if manifest['schemaVersion'] == 1
         if manifest['fsLayers']
           files += manifest['fsLayers'].collect do |layer|
-            layerfile = "#{layer['blobSum'][7..-1]}.tar"
+            layerfile = "#{layer['blobSum'][7..-1]}"
             force_include_layer(repository, layer['blobSum'], layerfile)
             layerfile
           end
@@ -344,12 +349,12 @@ module Katello
       elsif manifest['schemaVersion'] == 2
         if manifest['layers']
           files += manifest['layers'].collect do |layer|
-            layerfile = "#{layer['digest'][7..-1]}.tar"
+            layerfile = "#{layer['digest'][7..-1]}"
             force_include_layer(repository, layer['digest'], layerfile)
             layerfile
           end
         end
-        files << "#{manifest['config']['digest'][7..-1]}.tar"
+        files << "#{manifest['config']['digest'][7..-1]}"
       else
         render_error 'custom_error', :status => :internal_server_error,
                              :locals => { :message => "Unsupported schema #{manifest['schemaVersion']}" }
@@ -426,13 +431,14 @@ module Katello
     # https://pulp.plan.io/issues/3497
     def force_include_layer(repository, digest, layer)
       unless File.exist? tmp_file(layer)
-        logger.debug "Getting blob #{digest} to write to #{layer}"
-        fullpath = "/v2/#{repository}/blobs/#{digest}"
-        request = Resources::Registry::Proxy.get(fullpath)
-        File.open(tmp_file(layer), 'wb', 0600) do |file|
-          file.write request.body
-        end
-        logger.debug "Wrote blob #{digest} to #{layer}"
+        logger.info "Blob #{digest} for #{layer} already exists; skipping"
+        # logger.debug "Getting blob #{digest} to write to #{layer}"
+        # fullpath = "/v2/#{repository}/blobs/#{digest}"
+        # request = Resources::Registry::Proxy.get(fullpath)
+        # File.open(tmp_file(layer), 'wb', 0600) do |file|
+        #   file.write request.body
+        # end
+        # logger.debug "Wrote blob #{digest} to #{layer}"
       end
     end
 
@@ -471,7 +477,7 @@ module Katello
 
     def process_action(method_name, *args)
       ::Api::V2::BaseController.instance_method(:process_action).bind(self).call(method_name, *args)
-      Rails.logger.debug "With body: #{response.body}\n" unless route_name == 'pull_blob'
+      Rails.logger.debug "With body: #{response.body}\n" unless (route_name == 'pull_blob' || route_name == 'upload_blob')
     end
   end
 end
